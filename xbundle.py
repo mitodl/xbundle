@@ -292,6 +292,8 @@ class XBundle(object):
         '''
         un = xml.get('url_name','')
         if xml.tag in self.DescriptorTags and 'url_name' in xml.attrib and un:
+            # Path separators are stored as colons in the XML.
+            un = un.replace(":", "/")
             dxml = etree.parse(dir / xml.tag / (un+'.xml')).getroot()
             dxml.attrib.update(xml.attrib)
             dxml.attrib.pop('url_name')
