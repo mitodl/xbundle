@@ -20,6 +20,7 @@ import sys
 import re
 import string
 import glob
+import subprocess
 
 from lxml import etree
 from lxml.html.soupparser import fromstring as fsbs
@@ -111,17 +112,27 @@ class XBundle(object):
     '''
 
     DescriptorTags = ['course','chapter','sequential','vertical','html','problem','video',
-                      'conditional', 'combinedopenended']
+                      'conditional', 'combinedopenended', 'videosequence', 'problemset',
+                      'wrapper', 'poll_question', 'randomize', 'proctor', 'discussion',
+                      'staffgrading', ]
+    KeepTogetherTags = []	# for latex2edx - simplier course structure
     MapTags = dict(section='sequential')
     DefaultSemester = '2013_Fall'
     DefaultOrg = 'MITx'
     PolicyTagMap = {'policy' : 'policy', 'gradingpolicy': 'grading_policy'}
     html_parser = etree.HTMLParser(compact=False,recover=True,remove_blank_text=True)
 
-    def __init__(self, keep_urls=False, force_studio_format=False):
+    def __init__(self, keep_urls=False, force_studio_format=False,
+                 skip_hidden=False, keep_studio_urls=False,
+                 no_overwrite=None,
+                 ):
         '''
         if keep_urls=True then the original url_name attributes are kept upon import and export,
         if nonrandom (ie non-Studio).
+        
+        if keep_studio_urls=True and keep_urls=True, then keep random urls.
+
+        no_overwrite: optional list of xml tags for which files should not be overwritten (eg course)
         '''
         self.course = etree.Element('course')
         self.metadata = etree.Element('metadata')
@@ -129,6 +140,10 @@ class XBundle(object):
         self.xml = None				# only used if XML xbundle file was read in
         self.keep_urls = keep_urls
         self.force_studio_format = force_studio_format	# sequential must be followed by vertical in export
+        self.skip_hidden = skip_hidden
+        self.keep_studio_urls = keep_studio_urls
+        self.no_overwrite = no_overwrite or []
+        self.overwrite_files = []
         return
 
         
@@ -141,9 +156,21 @@ class XBundle(object):
             return
         if not 'org' in xml.attrib:
             xml.set('org',self.DefaultOrg)
+        semester = xml.get('url_name', xml.get('semester', self.DefaultSemester))
         if not 'semester' in xml.attrib:
-            xml.set('semester',self.DefaultSemester)
+            xml.set('semester', semester)
+        self.semester = semester
         self.course = xml
+        # fill up self.urlnames with existing ones if keep_urls
+        if self.keep_urls:
+            def walk(xml):
+                un = xml.get('url_name','')
+                if un:
+                    self.urlnames.append(un)
+                if xml.tag in self.DescriptorTags:
+                    for child in xml:
+                        walk(child)
+            walk(xml)
     
         
     def add_policies(self, policies):
@@ -166,10 +193,10 @@ class XBundle(object):
             about = etree.SubElement(self.metadata,'about')
         abfile = etree.SubElement(about, 'file')
         abfile.set('filename',filename)
+        abfile.text = filedata
         # Unicode characters in the "about" HTML file were causing
         # the lxml package to break.
         abfile.text = filedata.decode('utf-8')
-
 
     #----------------------------------------
     # load/save 
@@ -231,7 +258,10 @@ class XBundle(object):
         
         # load about files
         for afn in glob.glob(dir / 'about/*'):
-            self.add_about_file(os.path.basename(afn), open(afn).read())
+            try:
+                self.add_about_file(os.path.basename(afn), open(afn).read())
+            except Exception as err:
+                print "Oops, failed to add file %s, error=%s" % (afn, err)
 
                 
     def import_course_from_directory(self, dir):
@@ -272,6 +302,8 @@ class XBundle(object):
         
 
     def is_not_random_urlname(self, un):
+        if self.keep_studio_urls:		# keep url even if random looking
+            return True
         # random urlname eg: 55bc076ad06e4ede9d0561948c03be2f
         nrand = len('55bc076ad06e4ede9d0561948c03be2f')
         if not len(un)==nrand:
@@ -280,6 +312,19 @@ class XBundle(object):
         if ndigits<6:
             return True
         return False	# ie seems to be random
+
+        
+    def update_metadata_from_policy(self, xml):
+        # update metadaa for this element from policy, if exists
+        policy = getattr(self,'policy')
+        pkey = '%s/%s' % (xml.tag, xml.get('url_name',xml.get('url_name_orig','<no_url_name>')))
+        if policy and pkey in policy:
+            #print "policy match for %s" % pkey
+            for (k,v) in policy[pkey].iteritems():
+                #if 'hide' in k:
+                #    print "metadata: %s" % [k,v]
+                if xml.get(k,None) is None:	# don't overwrite xml's metadata setting, if exists already
+                    xml.set(k,str(v))
 
         
     def import_xml_removing_descriptor(self, dir, xml):
@@ -294,17 +339,41 @@ class XBundle(object):
         '''
         un = xml.get('url_name','')
         if xml.tag in self.DescriptorTags and 'url_name' in xml.attrib and un:
-            # Path separators are stored as colons in the XML.
-            un = un.replace(":", "/")
-            dxml = etree.parse(dir / xml.tag / (un+'.xml')).getroot()
-            dxml.attrib.update(xml.attrib)
+            unfn = un.replace(':','/')		# colon -> subdir slash in url_name
+            fn = dir / xml.tag / (unfn+'.xml')
+            if not os.path.exists(fn):
+                # print "[xbundle] Skipping %s, does not exist" % fn
+                return xml
+            try:
+                dxml = etree.parse(fn).getroot()
+            except Exception as err:
+                print "[xbundle] Error parsing xml for %s" % fn
+                raise
+            try:
+                dxml.attrib.update(xml.attrib)
+            except Exception as err:
+                print "[xbundle] error updating attribute, dxml=%s\nxml=%s"  % (etree.tostring(dxml), etree.tostring(xml))
+                print "dxml.attrib=%s" % dxml.attrib
+                print "xml.attrib=%s" % xml.attrib
+                print "likely your version of lxml is too old (need version >= 3)"
+                raise
             dxml.attrib.pop('url_name')
+
             if self.keep_urls and self.is_not_random_urlname(un):
                 dxml.set('url_name_orig', un)	# keep url_name as url_name_orig
+
             if dxml.tag in self.DescriptorTags and dxml.get('display_name') is None:
                 if not dxml.tag=='course':	# special case: don't add display_name to course
                     dxml.set('display_name',un)
-            xml = dxml
+
+            if self.skip_hidden:
+                self.update_metadata_from_policy(dxml)
+                if xml.get('hide_from_toc','')=='true':
+                    print "[xbundle] Skipping %s (%s), it has hide_from_toc=true" % (xml.tag, xml.get('display_name','<noname>'))
+                else:
+                    xml = dxml
+            else:
+                xml = dxml
 
         fn = xml.get('filename','')
         if xml.tag in ['html','problem'] and fn: # special for <html filename="..." display_name="..."/>
@@ -312,29 +381,40 @@ class XBundle(object):
             if xml.tag=='html':
                 if not fn.endswith('.html'):
                     fn += '.html'
-                if not fn.startswith('html/'):
-                    fn = 'html/' + fn
+                #if not fn.startswith('html/'):
+                #    fn = 'html/' + fn
                 options = dict(parser=self.html_parser)
             elif xml.tag=='problem':
                 if not fn.endswith('.xml'):
                     fn += '.xml'
-                if not fn.startswith('problems/'):
-                    fn = 'problems/' + fn
+                #if not fn.startswith('problems/'):
+                #    fn = 'problems/' + fn
                 options = {}
                 
+            if not os.path.exists(dir/xml.tag/fn):
+                if '-' in fn:
+                    fn = '%s/%s' % (fn.split('-',1)[0], fn)
             try:
-                dxml = etree.parse(dir / fn, **options).getroot()
+                dxml = etree.parse(dir / xml.tag / fn, **options).getroot()
             except Exception as err:
                 print "Error!  Can't load and parse HTML file %s, error:" % (dir/xml.tag/fn)
                 print err
-            if 'xmlns' in dxml.attrib:
-                dxml.attrib.pop('xmlns')
-            dxml.attrib.update(xml.attrib)
-            dxml.attrib.pop('filename')
-            if dxml.tag in self.DescriptorTags and dxml.get('display_name') is None:
-                dxml.set('display_name',un)
-            xml = dxml
+                dxml = None
+            if dxml is not None:
+                if 'xmlns' in dxml.attrib:
+                    dxml.attrib.pop('xmlns')
+                dxml.attrib.update(xml.attrib)
+                dxml.attrib.pop('filename')
+                if dxml.tag in self.DescriptorTags and dxml.get('display_name') is None:
+                    dxml.set('display_name',un)
+                xml = dxml
             
+        if self.skip_hidden:
+            self.update_metadata_from_policy(xml)
+            if xml.get('hide_from_toc','')=='true':
+                print "[xbundle] Skipping %s (%s), it has hide_from_toc=true" % (xml.tag, xml.get('display_name','<noname>'))
+                return xml
+
         for child in xml:
             dchild = self.import_xml_removing_descriptor(dir, child)	# recurse
             if not dchild==child:
@@ -343,17 +423,23 @@ class XBundle(object):
         return xml
 
 
-    def export_to_directory(self, exdir='./'):
+    def export_to_directory(self, exdir='./', xml_only=False, newfmt=True):
         '''
         Export xbundle to edX xml directory
         First insert all the intermediate descriptors needed.
         Do about and XML separately.
         '''
         coursex = etree.Element('course')
-        semester = self.course.get('semester')
-        coursex.set('url_name',semester)
-        coursex.set('org',self.course.get('org'))
-        coursex.set('course',self.course.get('course'))
+        semester = self.course.get('semester', '')
+        semester = semester.replace(' ', '_')		# no spaces in url_name (should do more checks here)
+        self.course.set('semester', semester)		# replace attribute just in case
+        coursex.set('url_name', semester)
+        coursex.set('org', self.course.get('org', ''))
+        if newfmt:
+            coursex.set('course', self.course.get('course',
+                        self.course.get('number', '')))
+        else:
+            coursex.set('number', self.course.get('number', ''))  # backwards compatibility
 
         self.export = self.make_descriptor(self.course, semester)
         self.export.append(self.course)
@@ -362,12 +448,13 @@ class XBundle(object):
         # print self.pp_xml(self.export)
 
         self.dir = self.mkdir(path(exdir) / self.course_id())
-        self.export_meta_to_directory()
-        self.export_xml_to_directory(self.export[0])
+        if not xml_only:
+            self.export_meta_to_directory()
+        self.export_xml_to_directory(self.export[0], dowrite=True)
 
         # write out top-level course.xml
 
-        open(self.dir/'course.xml','w').write(self.pp_xml(coursex))
+        self.write_xml_file(self.dir / 'course.xml', coursex)
 
 
     def export_meta_to_directory(self):
@@ -379,22 +466,29 @@ class XBundle(object):
             semester = pxml.get('semester')
             dir = self.mkdir(pdir / semester)
             for k in pxml:
-                fn = self.PolicyTagMap.get(k.tag,k.tag) + '.json'
-                open(dir/fn,'w').write(k.text)	# write out content to policy directory file
+                fn = self.PolicyTagMap.get(k.tag, k.tag) + '.json'
+                open(dir / fn, 'w').write(k.text)  # write out content to policy directory file
         
-        adir = self.mkdir(self.dir/'about')
+        adir = self.mkdir(self.dir / 'about')
         for fxml in self.metadata.findall('about/file'):
             fn = fxml.get('filename')
             try:
-                fp = open(adir/fn,'w')
+                fp = open(adir / fn, 'w')
                 if fxml.text is not None and len(fxml.text):
                     fp.write(fxml.text)
                 fp.close()
             except Exception as err:
-                self.errlog('failed to write about file %s, error %s' % (adir/fn, err))
+                self.errlog('failed to write about file %s, error %s' % (adir / fn, err))
 
 
-    def export_xml_to_directory(self, elem):
+    def write_xml_file(self, fn, xml, force_overwrite=False):
+        if (not force_overwrite) and (xml.tag in self.no_overwrite) and os.path.exists(fn):
+            print "[xbundle] Not overwriting %s for %s" % (fn, xml)
+            fn = fn + '.new'
+            self.overwrite_files.append(fn)
+        open(fn, 'w').write(self.pp_xml(xml))
+
+    def export_xml_to_directory(self, elem, dowrite=False):
         '''
         Do this recursively.  If an element is a descriptor, then put that in its own
         subdirectory.
@@ -408,58 +502,73 @@ class XBundle(object):
             if 'url_name_orig' in elem.attrib and self.keep_urls:
                 elem.attrib.pop('url_name_orig')
             edir = self.mkdir(self.dir / x.tag)
-            open(edir/un + '.xml','w').write(self.pp_xml(x))
+            self.write_xml_file(edir / un + '.xml', x)
             return un
 
-        #print elem
-        if elem.tag=='descriptor':
+        # print elem
+        if elem.tag == 'descriptor':
             # print "--> %s" % list(elem)
-            self.export_xml_to_directory(elem[0])	# recurse on children, depth first
-            elem.tag = elem.get('tag')
-            elem.set('url_name',elem.get('url_name'))
+            self.export_xml_to_directory(elem[0], dowrite=True)  # recurse on children, depth first
+            elem.tag = elem.get('tag')			# change descriptor to point to new elem
+            elem.set('url_name', elem.get('url_name'))
             elem.attrib.pop('tag')
             # self.export_xml_to_directory(elem)	# recurse on this tag
 
-        elif elem.tag==etree.Comment:			# comment <!-- foo -->
+        elif elem.tag == etree.Comment:			# comment <!-- foo -->
             pass
 
-        elif elem.get('url_name') is None:
+        elif elem.tag not in self.DescriptorTags:  # don't recurse if not a DescriptorTag
             pass
+
+        # elif elem.get('url_name') is None:
+        #    pass
 
         else:
-            if elem.findall('.//descriptor'):
+            if elem.findall('.//descriptor'):		# if any descriptors in children
                 for k in elem:
-                    self.export_xml_to_directory(k)		# recurse on children
-            write_xml(elem)		                # write to file and remove from parent
-            elem.getparent().remove(elem)
+                    self.export_xml_to_directory(k)  # recurse on children (don't necessarily write)
+            if dowrite:
+                write_xml(elem)		                # write to file and remove from parent
+                elem.getparent().remove(elem)
 
 
     def course_id(self):
-        return self.course.get('course','')
+        return self.course.get('course', '')
 
 
     def errlog(self, msg):
         print msg
         
 
-    def mkdir(self,p):
+    def mkdir(self, p):
         '''p is a path'''
         if not p.exists():
             p.mkdir()
         return p
 
 
-    def pp_xml(self,xml):
-        os.popen('xmllint --format -o tmp.xml -','w').write(etree.tostring(xml))
-        return open('tmp.xml').read()
+    def pp_xml(self, xml):
+        # os.popen('xmllint --format -o tmp.xml -','w').write(etree.tostring(xml))
+        try:
+            p = subprocess.Popen(['xmllint', '--format', '-o', 'tmp.xml', '-'], stdin=subprocess.PIPE)
+            p.stdin.write(etree.tostring(xml))
+            p.stdin.close()
+            p.wait()
+            xml = open('tmp.xml').read()
+        except Exception as err:
+            print "[xbundle.py] Warning - no xmllint"
+            xml = etree.tostring(xml, pretty_print=True)
 
+        if xml.startswith('<?xml '):
+            xml = xml.split('\n', 1)[1]
+        return xml
 
     def make_urlname(self, xml, parent=''):
-        dn = xml.get('display_name','')
+        dn = xml.get('display_name', '')
         s = dn
         if not s:
             xmlp = xml.getparent()
-            s = xmlp.get('display_name','')	# if no display_name, try to use parent's
+            s = xmlp.get('display_name', '')  # if no display_name, try to use parent's
             if not s:
                 s = xmlp.tag
         s += " " + xml.tag
@@ -469,16 +578,16 @@ class XBundle(object):
                '/': '__',
                '&': 'and',
                }
-        for m,v in map.items():
+        for m, v in map.items():
             for ch in m:
-                s = s.replace(ch,v)
+                s = s.replace(ch, v)
         if dn and s in self.urlnames and parent:
             s += '_' + parent
         while s in self.urlnames:
-            m = re.match('(.+?)([0-9]*)$',s)
-            (s,idx) = m.groups()
+            m = re.match('(.+?)([0-9]*)$', s)
+            (s, idx) = m.groups()
             idx = int(idx or 0)
-            s += str(idx+1)
+            s += str(idx + 1)
         self.urlnames.append(s)
         return s
 
@@ -488,16 +597,16 @@ class XBundle(object):
         Construct and return a descriptor element for the given element
         at the head of xml.
 
-        Use url_name for the descriptor, if given.  
+        Use url_name for the descriptor, if given.
         """
         descriptor = etree.Element('descriptor')
-        descriptor.set('tag',xml.tag)
-        uno = xml.get('url_name_orig','')
+        descriptor.set('tag', xml.tag)
+        uno = xml.get('url_name_orig', '')
         if self.keep_urls and not url_name and uno and self.is_not_random_urlname(uno):
             url_name = uno
         if not url_name:
             url_name = self.make_urlname(xml, parent=parent)
-        descriptor.set('url_name',url_name)
+        descriptor.set('url_name', url_name)
         xml.set('url_name', url_name)
         return descriptor
 
@@ -511,22 +620,30 @@ class XBundle(object):
         '''
         for elem in xml:
             if self.force_studio_format:
-                if xml.tag=='sequential' and not elem.tag=='vertical':	# studio needs seq -> vert -> other
+                if xml.tag == 'sequential' and not elem.tag == 'vertical':  # studio needs seq -> vert -> other
                     # move child into vertical
                     vert = etree.Element('vertical')
                     elem.addprevious(vert)
+                    # vert.set('display_name', 'vert_'+elem.get('display_name',''))
+                    vert.set('url_name', self.make_urlname(vert))
                     vert.append(elem)
                     elem = vert			# continue processing on the vertical
-            if elem.tag in self.DescriptorTags and not elem.get('url_name',''):
-                desc = self.make_descriptor(elem, parent=parent)
-                elem.addprevious(desc)
-                desc.append(elem)		# move descriptor to become new parent of elem
-                self.add_descriptors(elem, desc.get('url_name'))	# recurse
+            # if elem.tag in self.DescriptorTags and not elem.get('url_name',''):
+            if elem.tag in self.DescriptorTags:
+                if not elem.tag in self.KeepTogetherTags:
+                    un = elem.get('url_name', '')
+                    desc = self.make_descriptor(elem, url_name=un, parent=parent)
+                    elem.addprevious(desc)
+                    desc.append(elem)		# move descriptor to become new parent of elem
+                else:
+                    desc = elem
+                self.add_descriptors(elem, desc.get('url_name', ''))  # recurse
 
-#-----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # tests
 
-def RunTests():
+
+def RunTests():  # pragma: no cover
     import unittest
 
     class TestXBundle(unittest.TestCase):
@@ -556,7 +673,7 @@ def RunTests():
 
             xb.set_course(etree.XML(cxmls))
             xb.add_policies(etree.XML(pxmls))
-            xb.add_about_file("overview.html","hello overview")
+            xb.add_about_file("overview.html", "hello overview")
 
             xbin = str(xb)
 
@@ -572,23 +689,23 @@ def RunTests():
 
             xbreloaded = str(xb2)
 
-            if not xbin==xbreloaded:
+            if not xbin == xbreloaded:
                 print "xbin"
                 print xbin
                 print "xbreloaded"
                 print xbreloaded
 
-            self.assertEqual(xbin,xbreloaded)
+            self.assertEqual(xbin, xbreloaded)
 
     ts = unittest.makeSuite(TestXBundle)
     ttr = unittest.TextTestRunner()
     ttr.run(ts)
 
 
-#-----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # main
 
-if __name__=='__main__':
+if __name__ == '__main__':
 
     def usage():
         print "Usage: python xbundle.py [--force-studio] [cmd] [infn] [outfn]"
@@ -603,30 +720,36 @@ if __name__=='__main__':
         print "  python xbundle.py convert ../data/edx4edx edx4edx_xbundle.xml"
         print "  python xbundle.py convert edx4edx_xbundle.xml ./"
 
+    if len(sys.argv) < 2:
+        usage()
+        sys.exit(0)
+
     argc = 1
     options = dict(keep_urls=True)
-    if sys.argv[argc]=='--force-studio':
+    if len(sys.argv) > argc and sys.argv[argc] == '--force-studio':
         argc += 1
         options['force_studio_format'] = True
 
     cmd = sys.argv[argc]
     
-    if cmd=='test':
+    if cmd == 'test':
         RunTests()
 
-    elif cmd=='convert':
+    elif cmd == 'convert':
         argc += 1
         infn = sys.argv[argc]
-        outfn = sys.argv[argc+1]
+        outfn = sys.argv[argc + 1]
         xb = XBundle(**options)
         if infn.endswith('.xml'):
             print "Converting xbundle file '%s' to edX xml directory '%s'" % (infn, outfn)
             xb.load(infn)
             xb.export_to_directory(outfn)
+            print "done"
         elif outfn.endswith('.xml'):
             print "Converting edX xml directory '%s' to xbundle file '%s'" % (infn, outfn)
             xb.import_from_directory(infn)
             xb.save(outfn)
+            print "done"
         else:
             usage()
     else:
