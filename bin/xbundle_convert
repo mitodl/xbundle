@@ -1,0 +1,69 @@
+#!/usr/bin/python
+
+"""
+A command-line script to use xbundle.
+"""
+
+import sys
+
+from xbundle import XBundle, RunTests
+
+# pylint: disable=star-args
+
+def usage():
+    """
+    print usage
+    """
+    print "Usage: python xbundle.py [--force-studio] [cmd] [infn] [outfn]"
+    print "where:"
+    print "  cmd = test:    run unit tests"
+    print "  cmd = convert: convert between xbundle and edX directory format"
+    print "                 the xbundle filename must end with .xml"
+    print "  --force-studio forces <sequential> to always be followed by <vertical> in export"
+    print "                 this makes it compatible with Studio import"
+    print ""
+    print "examples:"
+    print "  python xbundle.py convert ../data/edx4edx edx4edx_xbundle.xml"
+    print "  python xbundle.py convert edx4edx_xbundle.xml ./"
+
+def main():
+    """
+    Convert between OLX and xbundle XML formats.
+    """
+    if len(sys.argv) < 2:
+        usage()
+        sys.exit(0)
+
+    argc = 1
+    options = dict(keep_urls=True)
+    if len(sys.argv) > argc and sys.argv[argc] == '--force-studio':
+        argc += 1
+        options['force_studio_format'] = True
+
+    cmd = sys.argv[argc]
+
+    if cmd == 'test':
+        RunTests()
+
+    elif cmd == 'convert':
+        argc += 1
+        infn = sys.argv[argc]
+        outfn = sys.argv[argc + 1]
+        bundle = XBundle(**options)
+        if infn.endswith('.xml'):
+            print "Converting xbundle file '%s' to edX xml directory '%s'" % (infn, outfn)
+            bundle.load(infn)
+            bundle.export_to_directory(outfn)
+            print "done"
+        elif outfn.endswith('.xml'):
+            print "Converting edX xml directory '%s' to xbundle file '%s'" % (infn, outfn)
+            bundle.import_from_directory(infn)
+            bundle.save(outfn)
+            print "done"
+        else:
+            usage()
+    else:
+        usage()
+
+if __name__ == '__main__':
+    main()
