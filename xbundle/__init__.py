@@ -250,7 +250,7 @@ class XBundle(object):
             policies = etree.Element('policies')
             policies.set('semester',os.path.basename(pdir))
             for fn in glob.glob(join(pdir, '*.json')):
-                x = etree.SubElement(policies,os.path.basename(fn).replace('_','').replace('.json',''))
+                x = etree.SubElement(policies,os.path.basename(fn).replace('_','').replace('.json','').replace(" ", "_"))
                 x.text = open(fn).read()
             self.add_policies(policies)
         
