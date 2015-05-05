@@ -251,7 +251,7 @@ class XBundle(object):
             policies.set('semester',os.path.basename(pdir))
             for fn in glob.glob(join(pdir, '*.json')):
                 x = etree.SubElement(policies,os.path.basename(fn).replace('_','').replace('.json',''))
-                x.text = open(fn).read()
+                x.text = open(fn).read().decode('utf-8')
             self.add_policies(policies)
         
         # load about files
