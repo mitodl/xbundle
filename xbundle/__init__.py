@@ -246,7 +246,6 @@ class XBundle(object):
     def import_metadata_from_directory(self, dir):
         # load policies
         for pdir in glob.glob(join(dir, 'policies/*')):
-            # print "pdir=",pdir
             policies = etree.Element('policies')
             policies.set('semester',os.path.basename(pdir))
             policy_files = set(["policy.json", "grading_policy.json"])
@@ -467,7 +466,8 @@ class XBundle(object):
             dir = self.mkdir(join(pdir, semester))
             for k in pxml:
                 fn = self.PolicyTagMap.get(k.tag, k.tag) + '.json'
-                open(join(dir, fn), 'w').write(k.text)  # write out content to policy directory file
+                # write out content to policy directory file
+                open(join(dir, fn), 'w').write(k.text.encode('utf-8'))
         
         adir = self.mkdir(join(self.dir, 'about'))
         for fxml in self.metadata.findall('about/file'):
