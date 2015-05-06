@@ -21,7 +21,7 @@ import re
 import string
 import glob
 import subprocess
-from os.path import join, exists
+from os.path import join, exists, basename
 
 from lxml import etree
 from lxml.html.soupparser import fromstring as fsbs
@@ -249,7 +249,10 @@ class XBundle(object):
             # print "pdir=",pdir
             policies = etree.Element('policies')
             policies.set('semester',os.path.basename(pdir))
+            policy_files = set(["policy.json", "grading_policy.json"])
             for fn in glob.glob(join(pdir, '*.json')):
+                if basename(fn) not in policy_files:
+                    continue
                 x = etree.SubElement(policies,os.path.basename(fn).replace('_','').replace('.json',''))
                 x.text = open(fn).read().decode('utf-8')
             self.add_policies(policies)
