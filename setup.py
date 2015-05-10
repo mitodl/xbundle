@@ -9,5 +9,5 @@ setup(
     author_email='ichuang@mit.edu, milochik@mit.edu',
     description='Converts edX courses between OLX and single-XML formats.',
     url='https://github.com/mitodl/xbundle',
-    install_requires=['lxml', 'BeautifulSoup'],
+    install_requires=['lxml', 'BeautifulSoup', 'docopt'],
 )
