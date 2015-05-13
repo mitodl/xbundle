@@ -1,69 +1,71 @@
 #!/usr/bin/env python
 
-"""
-A command-line script to use xbundle.
+"""xbundle_convert
+
+Description:
+    Convert between OLX and xbundle XML formats.
+    If the input format in an XML file, the output will be OLX.
+    If the input format is a directory, the output will be xbundle.
+
+Usage:
+    xbundle_convert convert [--force-studio] <input> <output>
+    xbundle_convert test
+    xbundle_convert --help | -h
+    xbundle_convert --version
+
+Options:
+    --force-studio  forces <sequential> to be followed by <vertical> in export
+    -h --help       show this screen
 """
 
+# stdlib
 import sys
+from pkg_resources import get_distribution
 
+# PyPi
+from docopt import docopt
+
+# local
 from xbundle import XBundle, run_tests
 
 # pylint: disable=star-args
-
-def usage():
-    """
-    print usage
-    """
-    print "Usage: python xbundle.py [--force-studio] [cmd] [infn] [outfn]"
-    print "where:"
-    print "  cmd = test:    run unit tests"
-    print "  cmd = convert: convert between xbundle and edX directory format"
-    print "                 the xbundle filename must end with .xml"
-    print "  --force-studio forces <sequential> to always be followed by <vertical> in export"
-    print "                 this makes it compatible with Studio import"
-    print ""
-    print "examples:"
-    print "  python xbundle.py convert ../data/edx4edx edx4edx_xbundle.xml"
-    print "  python xbundle.py convert edx4edx_xbundle.xml ./"
 
 def main():
     """
     Convert between OLX and xbundle XML formats.
     """
-    if len(sys.argv) < 2:
-        usage()
-        sys.exit(0)
+    # This parses the docstring above and derives all arguments.
+    # If the required arguments are missing, it prints basic usage
+    # and exits automatically.
+    # If required arguments are satisfied, it returns a dict.
+    args = docopt(__doc__, version=get_distribution("xbundle").version)
 
-    argc = 1
     options = dict(keep_urls=True)
-    if len(sys.argv) > argc and sys.argv[argc] == '--force-studio':
-        argc += 1
+    if args['--force-studio']:
         options['force_studio_format'] = True
 
-    cmd = sys.argv[argc]
-
-    if cmd == 'test':
+    if args['test']:
         run_tests()
+        return
 
-    elif cmd == 'convert':
-        argc += 1
-        infn = sys.argv[argc]
-        outfn = sys.argv[argc + 1]
-        bundle = XBundle(**options)
-        if infn.endswith('.xml'):
-            print "Converting xbundle file '%s' to edX xml directory '%s'" % (infn, outfn)
-            bundle.load(infn)
-            bundle.export_to_directory(outfn)
-            print "done"
-        elif outfn.endswith('.xml'):
-            print "Converting edX xml directory '%s' to xbundle file '%s'" % (infn, outfn)
-            bundle.import_from_directory(infn)
-            bundle.save(outfn)
-            print "done"
-        else:
-            usage()
+    bundle = XBundle(**options)
+    input_path = args['<input>']
+    output_path = args['<output>']
+    if input_path.endswith('.xml'):
+        print "Converting xbundle '{0}' to edX directory '{1}'".format(
+            input_path, output_path)
+        bundle.load(input_path)
+        bundle.export_to_directory(output_path)
+        print "done"
+    elif output_path.endswith('.xml'):
+        print "Converting edX directory '{0}' to xbundle '{1}'".format(
+            input_path, output_path)
+        bundle.import_from_directory(input_path)
+        bundle.save(output_path)
+        print "done"
     else:
-        usage()
+        print "Invalid input; run with --help for more info."
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
