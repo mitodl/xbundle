@@ -15,7 +15,7 @@ setup(
     author_email='odl-engineering@mit.edu',
     description='Converts edX courses between OLX and single-XML formats.',
     url='https://github.com/mitodl/xbundle',
-    install_requires=['lxml', 'BeautifulSoup', 'docopt'],
+    install_requires=['lxml', 'docopt'],
     license='BSD',
     long_description=README,
     classifiers=[
