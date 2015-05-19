@@ -16,6 +16,8 @@ The XBundle class represents an xbundle file; it can read and write
 the file, and it can import and export to standard edX (unbundled) format.
 """
 
+from __future__ import unicode_literals
+
 import os
 import re
 import logging
