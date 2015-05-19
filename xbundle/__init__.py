@@ -598,7 +598,7 @@ def run_tests():  # pragma: no cover
             """
             Test import/export cycle.
             """
-            print "Testing XBundle round trip import -> export"
+            print("Testing XBundle round trip import -> export")
             bundle = XBundle()
             cxmls = """
 <course semester="2013_Spring" course="mitx.01">
@@ -638,10 +638,10 @@ def run_tests():  # pragma: no cover
             xbreloaded = str(xb2)
 
             if not xbin == xbreloaded:
-                print "xbin"
-                print xbin
-                print "xbreloaded"
-                print xbreloaded
+                print("xbin")
+                print(xbin)
+                print("xbreloaded")
+                print(xbreloaded)
 
             self.assertEqual(xbin, xbreloaded)
 
