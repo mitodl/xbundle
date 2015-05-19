@@ -177,7 +177,7 @@ class XBundle(object):
                 elem = etree.SubElement(policies, basename(
                     filename).replace('_', '').replace('.json', ''))
                 with open(filename) as data:
-                    elem.text = data.read().decode('utf-8')
+                    elem.text = unicode(data.read(), encoding='utf-8')
             self.add_policies(policies)
 
         # Load "about" files.
