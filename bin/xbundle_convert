@@ -30,6 +30,7 @@ from xbundle import XBundle, run_tests
 
 # pylint: disable=star-args
 
+
 def main():
     """
     Convert between OLX and xbundle XML formats.
@@ -52,19 +53,21 @@ def main():
     input_path = args['<input>']
     output_path = args['<output>']
     if input_path.endswith('.xml'):
-        print "Converting xbundle '{0}' to edX directory '{1}'".format(
+        print("Converting xbundle '{0}' to edX directory '{1}'".format(
             input_path, output_path)
+        )
         bundle.load(input_path)
         bundle.export_to_directory(output_path)
-        print "done"
+        print("done")
     elif output_path.endswith('.xml'):
-        print "Converting edX directory '{0}' to xbundle '{1}'".format(
+        print("Converting edX directory '{0}' to xbundle '{1}'".format(
             input_path, output_path)
+        )
         bundle.import_from_directory(input_path)
         bundle.save(output_path)
-        print "done"
+        print("done")
     else:
-        print "Invalid input; run with --help for more info."
+        print("Invalid input; run with --help for more info.")
         sys.exit(1)
 
 if __name__ == '__main__':
