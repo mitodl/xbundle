@@ -26,7 +26,7 @@ import subprocess
 from os.path import join, exists, basename
 
 from lxml import etree
-
+import unicodedata
 log = logging.getLogger()  # pylint: disable=invalid-name
 logging.basicConfig()
 log.setLevel(logging.DEBUG)
@@ -124,7 +124,10 @@ class XBundle(object):
         abfile.text = filedata
         # Unicode characters in the "about" HTML file were causing
         # the lxml package to break.
-        abfile.text = filedata.decode('utf-8')
+        if not isinstance(filedata, str):
+            abfile.text = filedata.decode('utf-8')
+        else:
+            abfile.text = filedata
 
     def load(self, filename):
         """
@@ -409,7 +412,7 @@ class XBundle(object):
                 filename = POLICY_TAG_MAP.get(k.tag, k.tag) + '.json'
                 # Write out content to policy directory file.
                 with open(join(path, filename), 'w') as output:
-                    output.write(k.text.encode('utf-8'))
+                    output.write(k.text)
 
         adir = mkdir(join(self.path, 'about'))
         for fxml in self.metadata.findall('about/file'):
@@ -497,9 +500,13 @@ class XBundle(object):
             '/': '__',
             '&': 'and',
         }
+
         for key, val in replacements.items():
             for char in key:
-                display_name = display_name.replace(char, val)
+                char_bytes = unicodedata.normalize('NFKD', char).encode('ascii', 'ignore')
+                val_bytes = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore')
+                display_name = display_name.replace(char_bytes, val_bytes)
+                
         if name and display_name in self.urlnames and parent:
             display_name += '_' + parent
         while display_name in self.urlnames:
@@ -580,8 +587,8 @@ def pp_xml(xml):
         log.warning("xmllint not found on system: %s", ex)
         xml = etree.tostring(xml, pretty_print=True)
 
-    if xml.startswith('<?xml '):
-        xml = xml.split('\n', 1)[1]
+    if xml.startswith(b'<?xml '):
+        xml = xml.decode('utf-8').split('\n', 1)[1]
     return xml
 
 
