@@ -16,6 +16,8 @@ The XBundle class represents an xbundle file; it can read and write
 the file, and it can import and export to standard edX (unbundled) format.
 """
 
+from __future__ import unicode_literals
+
 import os
 import re
 import logging
@@ -24,7 +26,7 @@ import subprocess
 from os.path import join, exists, basename
 
 from lxml import etree
-
+import unicodedata
 log = logging.getLogger()  # pylint: disable=invalid-name
 logging.basicConfig()
 log.setLevel(logging.DEBUG)
@@ -122,7 +124,10 @@ class XBundle(object):
         abfile.text = filedata
         # Unicode characters in the "about" HTML file were causing
         # the lxml package to break.
-        abfile.text = filedata.decode('utf-8')
+        if not isinstance(filedata, str):
+            abfile.text = filedata.decode('utf-8')
+        else:
+            abfile.text = filedata
 
     def load(self, filename):
         """
@@ -174,15 +179,16 @@ class XBundle(object):
                     continue
                 elem = etree.SubElement(policies, basename(
                     filename).replace('_', '').replace('.json', ''))
-                with open(filename) as data:
+                with open(filename, "rb") as data:
                     elem.text = data.read().decode('utf-8')
             self.add_policies(policies)
 
         # Load "about" files.
         for afn in glob(join(path, 'about/*')):
             try:
-                with open(afn) as data:
-                    self.add_about_file(basename(afn), data.read())
+                with open(afn, "rb") as data:
+                    self.add_about_file(
+                        basename(afn), data.read().decode("utf-8"))
             except ValueError as err:
                 log.warning("Failed to add file %s, error=%s", afn, err)
 
@@ -406,7 +412,7 @@ class XBundle(object):
             for k in pxml:
                 filename = POLICY_TAG_MAP.get(k.tag, k.tag) + '.json'
                 # Write out content to policy directory file.
-                with open(join(path, filename), 'w') as output:
+                with open(join(path, filename), 'wb') as output:
                     output.write(k.text.encode('utf-8'))
 
         adir = mkdir(join(self.path, 'about'))
@@ -416,8 +422,12 @@ class XBundle(object):
                 # Moved "if" statement after the "open" statement, so we
                 # no longer create zero-byte files here.
                 if fxml.text not in (None, ""):
-                    with open(join(adir, filename), 'w') as output:
-                        output.write(fxml.text)
+                    try:
+                        to_write = fxml.text.encode("utf-8")
+                    except UnicodeEncodeError:
+                        to_write = fxml.text
+                    with open(join(adir, filename), 'wb') as output:
+                        output.write(to_write)
             except IOError as err:
                 log.error(
                     'failed to write about file %s, error %s',
@@ -495,11 +505,20 @@ class XBundle(object):
             '/': '__',
             '&': 'and',
         }
+
         for key, val in replacements.items():
             for char in key:
-                display_name = display_name.replace(char, val)
+                char_bytes = unicodedata.normalize('NFKD', char).encode('ascii', 'ignore')
+                val_bytes = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore')
+                display_name = display_name.replace(char_bytes, val_bytes)
+                
         if name and display_name in self.urlnames and parent:
-            display_name += '_' + parent
+            display_name = "{0}_{1}".format(display_name, parent)
+            try:
+                # Sometimes it's bytes, sometimes a string...
+                display_name = display_name.decode("utf-8")
+            except AttributeError:
+                pass
         while display_name in self.urlnames:
             key = re.match('(.+?)([0-9]*)$', display_name)
             display_name, idx = key.groups()
@@ -578,8 +597,8 @@ def pp_xml(xml):
         log.warning("xmllint not found on system: %s", ex)
         xml = etree.tostring(xml, pretty_print=True)
 
-    if xml.startswith('<?xml '):
-        xml = xml.split('\n', 1)[1]
+    if xml.startswith(b'<?xml '):
+        xml = xml.decode('utf-8').split('\n', 1)[1]
     return xml
 
 
@@ -598,7 +617,7 @@ def run_tests():  # pragma: no cover
             """
             Test import/export cycle.
             """
-            print "Testing XBundle round trip import -> export"
+            print("Testing XBundle round trip import -> export")
             bundle = XBundle()
             cxmls = """
 <course semester="2013_Spring" course="mitx.01">
@@ -638,10 +657,10 @@ def run_tests():  # pragma: no cover
             xbreloaded = str(xb2)
 
             if not xbin == xbreloaded:
-                print "xbin"
-                print xbin
-                print "xbreloaded"
-                print xbreloaded
+                print("xbin")
+                print(xbin)
+                print("xbreloaded")
+                print(xbreloaded)
 
             self.assertEqual(xbin, xbreloaded)
 
