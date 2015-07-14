@@ -664,6 +664,40 @@ def run_tests():  # pragma: no cover
 
             self.assertEqual(xbin, xbreloaded)
 
+        # pylint: disable=too-few-public-methods
+        def test_import_url_name(self):
+            """
+            Test import/export cycle.
+            """
+            bundle = XBundle(keep_urls=True, keep_studio_urls=True)
+            bundle.import_from_directory('input_testdata/mitx.01')
+
+            bundle_string = str(bundle)
+
+            expected = """<xbundle>
+  <metadata>
+    <policies semester="2013_Spring">
+      <gradingpolicy>y:2</gradingpolicy>
+      <policy>x:1</policy>
+    </policies>
+    <about>
+      <file filename="overview.html">hello overview</file>
+    </about>
+  </metadata>
+  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name_orig="2013_Spring">
+    <chapter display_name="Intro" url_name_orig="Intro_chapter">
+      <sequential display_name="Overview">
+        <html display_name="Overview text" url_name_orig="Overview_text_html">
+        hello world
+      </html>
+      </sequential>
+      <!-- a comment -->
+    </chapter>
+  </course>
+</xbundle>
+"""
+            self.assertEqual(expected, bundle_string)
+
     suite = unittest.makeSuite(TestXBundle)
     ttr = unittest.TextTestRunner()
     ttr.run(suite)
