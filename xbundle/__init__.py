@@ -245,7 +245,7 @@ class XBundle(object):
 
     def update_metadata_from_policy(self, xml):
         """
-        Update metadaa for this element from policy, if exists.
+        Update metadata for this element from policy, if exists.
         """
         policy = getattr(self, 'policy')
         pkey = '{0}/{1}'.format(
@@ -292,9 +292,9 @@ class XBundle(object):
                 raise
             dxml.attrib.pop('url_name')
 
-            # Keep url_name as url_name_orig.
+            # Keep url_name.
             if self.keep_urls and self.is_not_random_urlname(url_name):
-                dxml.set('url_name_orig', url_name)
+                dxml.set('url_name', url_name)
 
             if dxml.tag in DESCRIPTOR_TAGS and dxml.get('display_name') is None:
                 # Special case: don't add display_name to course.
@@ -684,10 +684,10 @@ def run_tests():  # pragma: no cover
       <file filename="overview.html">hello overview</file>
     </about>
   </metadata>
-  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name_orig="2013_Spring">
-    <chapter display_name="Intro" url_name_orig="Intro_chapter">
+  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name="2013_Spring">
+    <chapter display_name="Intro" url_name="Intro_chapter">
       <sequential display_name="Overview">
-        <html display_name="Overview text" url_name_orig="Overview_text_html">
+        <html display_name="Overview text" url_name="Overview_text_html">
         hello world
       </html>
       </sequential>
