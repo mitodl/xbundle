@@ -514,11 +514,11 @@ class XBundle(object):
                 
         if name and display_name in self.urlnames and parent:
             display_name = "{0}_{1}".format(display_name, parent)
-            try:
-                # Sometimes it's bytes, sometimes a string...
-                display_name = display_name.decode("utf-8")
-            except AttributeError:
-                pass
+        try:
+            # Sometimes it's bytes, sometimes a string...
+            display_name = display_name.decode("utf-8")
+        except AttributeError:
+            pass
         while display_name in self.urlnames:
             key = re.match('(.+?)([0-9]*)$', display_name)
             display_name, idx = key.groups()
