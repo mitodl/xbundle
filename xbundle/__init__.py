@@ -245,7 +245,7 @@ class XBundle(object):
 
     def update_metadata_from_policy(self, xml):
         """
-        Update metadaa for this element from policy, if exists.
+        Update metadata for this element from policy, if exists.
         """
         policy = getattr(self, 'policy')
         pkey = '{0}/{1}'.format(
@@ -292,9 +292,9 @@ class XBundle(object):
                 raise
             dxml.attrib.pop('url_name')
 
-            # Keep url_name as url_name_orig.
+            # Keep url_name.
             if self.keep_urls and self.is_not_random_urlname(url_name):
-                dxml.set('url_name_orig', url_name)
+                dxml.set('url_name', url_name)
 
             if dxml.tag in DESCRIPTOR_TAGS and dxml.get('display_name') is None:
                 # Special case: don't add display_name to course.
@@ -514,11 +514,11 @@ class XBundle(object):
                 
         if name and display_name in self.urlnames and parent:
             display_name = "{0}_{1}".format(display_name, parent)
-            try:
-                # Sometimes it's bytes, sometimes a string...
-                display_name = display_name.decode("utf-8")
-            except AttributeError:
-                pass
+        try:
+            # Sometimes it's bytes, sometimes a string...
+            display_name = display_name.decode("utf-8")
+        except AttributeError:
+            pass
         while display_name in self.urlnames:
             key = re.match('(.+?)([0-9]*)$', display_name)
             display_name, idx = key.groups()
@@ -663,6 +663,40 @@ def run_tests():  # pragma: no cover
                 print(xbreloaded)
 
             self.assertEqual(xbin, xbreloaded)
+
+        # pylint: disable=too-few-public-methods
+        def test_import_url_name(self):
+            """
+            Test import/export cycle.
+            """
+            bundle = XBundle(keep_urls=True, keep_studio_urls=True)
+            bundle.import_from_directory('input_testdata/mitx.01')
+
+            bundle_string = str(bundle)
+
+            expected = """<xbundle>
+  <metadata>
+    <policies semester="2013_Spring">
+      <gradingpolicy>y:2</gradingpolicy>
+      <policy>x:1</policy>
+    </policies>
+    <about>
+      <file filename="overview.html">hello overview</file>
+    </about>
+  </metadata>
+  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name="2013_Spring">
+    <chapter display_name="Intro" url_name="Intro_chapter">
+      <sequential display_name="Overview">
+        <html display_name="Overview text" url_name="Overview_text_html">
+        hello world
+      </html>
+      </sequential>
+      <!-- a comment -->
+    </chapter>
+  </course>
+</xbundle>
+"""
+            self.assertEqual(expected, bundle_string)
 
     suite = unittest.makeSuite(TestXBundle)
     ttr = unittest.TextTestRunner()
