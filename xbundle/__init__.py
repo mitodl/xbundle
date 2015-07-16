@@ -52,7 +52,7 @@ class XBundle(object):
     def __init__(
             self, keep_urls=False, force_studio_format=False,
             skip_hidden=False, keep_studio_urls=False,
-            no_overwrite=None,
+            no_overwrite=None, preserve_url_name=False,
         ):
         """
         if keep_urls=True then the original url_name attributes are kept upon
@@ -60,6 +60,8 @@ class XBundle(object):
         if nonrandom (ie non-Studio).
 
         if keep_studio_urls=True and keep_urls=True, then keep random urls.
+
+        if preserve_url_name=True, store urls as url_name instead of url_name_orig
 
         no_overwrite: optional list of xml tags for which files should not
                       be overwritten (eg course)
@@ -73,6 +75,7 @@ class XBundle(object):
         self.force_studio_format = force_studio_format
         self.skip_hidden = skip_hidden
         self.keep_studio_urls = keep_studio_urls
+        self.preserve_url_name = preserve_url_name
         self.no_overwrite = no_overwrite or []
         self.path = ""
         self.semester = ""
@@ -245,7 +248,7 @@ class XBundle(object):
 
     def update_metadata_from_policy(self, xml):
         """
-        Update metadaa for this element from policy, if exists.
+        Update metadata for this element from policy, if exists.
         """
         policy = getattr(self, 'policy')
         pkey = '{0}/{1}'.format(
@@ -294,7 +297,10 @@ class XBundle(object):
 
             # Keep url_name as url_name_orig.
             if self.keep_urls and self.is_not_random_urlname(url_name):
-                dxml.set('url_name_orig', url_name)
+                if self.preserve_url_name:
+                    dxml.set('url_name', url_name)
+                else:
+                    dxml.set('url_name_orig', url_name)
 
             if dxml.tag in DESCRIPTOR_TAGS and dxml.get('display_name') is None:
                 # Special case: don't add display_name to course.
@@ -664,6 +670,73 @@ def run_tests():  # pragma: no cover
 
             self.assertEqual(xbin, xbreloaded)
 
+        def test_import_url_name(self):
+            """
+            Test that we import url_name as url_name_orig.
+            """
+            bundle = XBundle(keep_urls=True, keep_studio_urls=True)
+            bundle.import_from_directory('input_testdata/mitx.01')
+
+            bundle_string = str(bundle)
+
+            expected = """<xbundle>
+  <metadata>
+    <policies semester="2013_Spring">
+      <gradingpolicy>y:2</gradingpolicy>
+      <policy>x:1</policy>
+    </policies>
+    <about>
+      <file filename="overview.html">hello overview</file>
+    </about>
+  </metadata>
+  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name_orig="2013_Spring">
+    <chapter display_name="Intro" url_name_orig="Intro_chapter">
+      <sequential display_name="Overview">
+        <html display_name="Overview text" url_name_orig="Overview_text_html">
+        hello world
+      </html>
+      </sequential>
+      <!-- a comment -->
+    </chapter>
+  </course>
+</xbundle>
+"""
+            self.assertEqual(expected, bundle_string)
+
+        def test_preserve_url_name(self):
+            """
+            Test that preserve_url_name imports as url_name and not url_name_orig.
+            """
+            bundle = XBundle(
+                keep_urls=True, keep_studio_urls=True, preserve_url_name=True)
+            bundle.import_from_directory('input_testdata/mitx.01')
+
+            bundle_string = str(bundle)
+
+            expected = """<xbundle>
+  <metadata>
+    <policies semester="2013_Spring">
+      <gradingpolicy>y:2</gradingpolicy>
+      <policy>x:1</policy>
+    </policies>
+    <about>
+      <file filename="overview.html">hello overview</file>
+    </about>
+  </metadata>
+  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name="2013_Spring">
+    <chapter display_name="Intro" url_name="Intro_chapter">
+      <sequential display_name="Overview">
+        <html display_name="Overview text" url_name="Overview_text_html">
+        hello world
+      </html>
+      </sequential>
+      <!-- a comment -->
+    </chapter>
+  </course>
+</xbundle>
+"""
+            self.assertEqual(expected, bundle_string)
+            
     suite = unittest.makeSuite(TestXBundle)
     ttr = unittest.TextTestRunner()
     ttr.run(suite)
