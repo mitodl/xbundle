@@ -514,11 +514,11 @@ class XBundle(object):
                 
         if name and display_name in self.urlnames and parent:
             display_name = "{0}_{1}".format(display_name, parent)
-        try:
-            # Sometimes it's bytes, sometimes a string...
-            display_name = display_name.decode("utf-8")
-        except AttributeError:
-            pass
+            try:
+                # Sometimes it's bytes, sometimes a string...
+                display_name = display_name.decode("utf-8")
+            except AttributeError:
+                pass
         while display_name in self.urlnames:
             key = re.match('(.+?)([0-9]*)$', display_name)
             display_name, idx = key.groups()
@@ -663,40 +663,6 @@ def run_tests():  # pragma: no cover
                 print(xbreloaded)
 
             self.assertEqual(xbin, xbreloaded)
-
-        # pylint: disable=too-few-public-methods
-        def test_import_url_name(self):
-            """
-            Test import/export cycle.
-            """
-            bundle = XBundle(keep_urls=True, keep_studio_urls=True)
-            bundle.import_from_directory('input_testdata/mitx.01')
-
-            bundle_string = str(bundle)
-
-            expected = """<xbundle>
-  <metadata>
-    <policies semester="2013_Spring">
-      <gradingpolicy>y:2</gradingpolicy>
-      <policy>x:1</policy>
-    </policies>
-    <about>
-      <file filename="overview.html">hello overview</file>
-    </about>
-  </metadata>
-  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name_orig="2013_Spring">
-    <chapter display_name="Intro" url_name_orig="Intro_chapter">
-      <sequential display_name="Overview">
-        <html display_name="Overview text" url_name_orig="Overview_text_html">
-        hello world
-      </html>
-      </sequential>
-      <!-- a comment -->
-    </chapter>
-  </course>
-</xbundle>
-"""
-            self.assertEqual(expected, bundle_string)
 
     suite = unittest.makeSuite(TestXBundle)
     ttr = unittest.TextTestRunner()
