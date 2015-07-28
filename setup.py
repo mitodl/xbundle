@@ -8,7 +8,7 @@ with open('README.rst') as readme_file:
 
 setup(
     name='xbundle',
-    version="0.2.0",
+    version="0.3.0",
     packages=['xbundle'],
     scripts=['bin/xbundle_convert'],
     author='MIT ODL Engineering',
@@ -19,6 +19,8 @@ setup(
     license='BSD',
     long_description=README,
     classifiers=[
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
