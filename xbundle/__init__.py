@@ -16,6 +16,8 @@ The XBundle class represents an xbundle file; it can read and write
 the file, and it can import and export to standard edX (unbundled) format.
 """
 
+from __future__ import unicode_literals
+
 import os
 import re
 import logging
@@ -24,7 +26,7 @@ import subprocess
 from os.path import join, exists, basename
 
 from lxml import etree
-
+import unicodedata
 log = logging.getLogger()  # pylint: disable=invalid-name
 logging.basicConfig()
 log.setLevel(logging.DEBUG)
@@ -50,7 +52,7 @@ class XBundle(object):
     def __init__(
             self, keep_urls=False, force_studio_format=False,
             skip_hidden=False, keep_studio_urls=False,
-            no_overwrite=None,
+            no_overwrite=None, preserve_url_name=False,
         ):
         """
         if keep_urls=True then the original url_name attributes are kept upon
@@ -58,6 +60,8 @@ class XBundle(object):
         if nonrandom (ie non-Studio).
 
         if keep_studio_urls=True and keep_urls=True, then keep random urls.
+
+        if preserve_url_name=True, store urls as url_name instead of url_name_orig
 
         no_overwrite: optional list of xml tags for which files should not
                       be overwritten (eg course)
@@ -71,6 +75,7 @@ class XBundle(object):
         self.force_studio_format = force_studio_format
         self.skip_hidden = skip_hidden
         self.keep_studio_urls = keep_studio_urls
+        self.preserve_url_name = preserve_url_name
         self.no_overwrite = no_overwrite or []
         self.path = ""
         self.semester = ""
@@ -122,7 +127,10 @@ class XBundle(object):
         abfile.text = filedata
         # Unicode characters in the "about" HTML file were causing
         # the lxml package to break.
-        abfile.text = filedata.decode('utf-8')
+        if not isinstance(filedata, str):
+            abfile.text = filedata.decode('utf-8')
+        else:
+            abfile.text = filedata
 
     def load(self, filename):
         """
@@ -174,15 +182,16 @@ class XBundle(object):
                     continue
                 elem = etree.SubElement(policies, basename(
                     filename).replace('_', '').replace('.json', ''))
-                with open(filename) as data:
+                with open(filename, "rb") as data:
                     elem.text = data.read().decode('utf-8')
             self.add_policies(policies)
 
         # Load "about" files.
         for afn in glob(join(path, 'about/*')):
             try:
-                with open(afn) as data:
-                    self.add_about_file(basename(afn), data.read())
+                with open(afn, "rb") as data:
+                    self.add_about_file(
+                        basename(afn), data.read().decode("utf-8"))
             except ValueError as err:
                 log.warning("Failed to add file %s, error=%s", afn, err)
 
@@ -239,7 +248,7 @@ class XBundle(object):
 
     def update_metadata_from_policy(self, xml):
         """
-        Update metadaa for this element from policy, if exists.
+        Update metadata for this element from policy, if exists.
         """
         policy = getattr(self, 'policy')
         pkey = '{0}/{1}'.format(
@@ -288,7 +297,10 @@ class XBundle(object):
 
             # Keep url_name as url_name_orig.
             if self.keep_urls and self.is_not_random_urlname(url_name):
-                dxml.set('url_name_orig', url_name)
+                if self.preserve_url_name:
+                    dxml.set('url_name', url_name)
+                else:
+                    dxml.set('url_name_orig', url_name)
 
             if dxml.tag in DESCRIPTOR_TAGS and dxml.get('display_name') is None:
                 # Special case: don't add display_name to course.
@@ -406,7 +418,7 @@ class XBundle(object):
             for k in pxml:
                 filename = POLICY_TAG_MAP.get(k.tag, k.tag) + '.json'
                 # Write out content to policy directory file.
-                with open(join(path, filename), 'w') as output:
+                with open(join(path, filename), 'wb') as output:
                     output.write(k.text.encode('utf-8'))
 
         adir = mkdir(join(self.path, 'about'))
@@ -416,8 +428,12 @@ class XBundle(object):
                 # Moved "if" statement after the "open" statement, so we
                 # no longer create zero-byte files here.
                 if fxml.text not in (None, ""):
-                    with open(join(adir, filename), 'w') as output:
-                        output.write(fxml.text)
+                    try:
+                        to_write = fxml.text.encode("utf-8")
+                    except UnicodeEncodeError:
+                        to_write = fxml.text
+                    with open(join(adir, filename), 'wb') as output:
+                        output.write(to_write)
             except IOError as err:
                 log.error(
                     'failed to write about file %s, error %s',
@@ -495,11 +511,20 @@ class XBundle(object):
             '/': '__',
             '&': 'and',
         }
+
         for key, val in replacements.items():
             for char in key:
-                display_name = display_name.replace(char, val)
+                char_bytes = unicodedata.normalize('NFKD', char).encode('ascii', 'ignore')
+                val_bytes = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore')
+                display_name = display_name.replace(char_bytes, val_bytes)
+                
         if name and display_name in self.urlnames and parent:
-            display_name += '_' + parent
+            display_name = "{0}_{1}".format(display_name, parent)
+        try:
+            # Sometimes it's bytes, sometimes a string...
+            display_name = display_name.decode("utf-8")
+        except AttributeError:
+            pass
         while display_name in self.urlnames:
             key = re.match('(.+?)([0-9]*)$', display_name)
             display_name, idx = key.groups()
@@ -578,8 +603,8 @@ def pp_xml(xml):
         log.warning("xmllint not found on system: %s", ex)
         xml = etree.tostring(xml, pretty_print=True)
 
-    if xml.startswith('<?xml '):
-        xml = xml.split('\n', 1)[1]
+    if xml.startswith(b'<?xml '):
+        xml = xml.decode('utf-8').split('\n', 1)[1]
     return xml
 
 
@@ -598,7 +623,7 @@ def run_tests():  # pragma: no cover
             """
             Test import/export cycle.
             """
-            print "Testing XBundle round trip import -> export"
+            print("Testing XBundle round trip import -> export")
             bundle = XBundle()
             cxmls = """
 <course semester="2013_Spring" course="mitx.01">
@@ -638,13 +663,80 @@ def run_tests():  # pragma: no cover
             xbreloaded = str(xb2)
 
             if not xbin == xbreloaded:
-                print "xbin"
-                print xbin
-                print "xbreloaded"
-                print xbreloaded
+                print("xbin")
+                print(xbin)
+                print("xbreloaded")
+                print(xbreloaded)
 
             self.assertEqual(xbin, xbreloaded)
 
+        def test_import_url_name(self):
+            """
+            Test that we import url_name as url_name_orig.
+            """
+            bundle = XBundle(keep_urls=True, keep_studio_urls=True)
+            bundle.import_from_directory('input_testdata/mitx.01')
+
+            bundle_string = str(bundle)
+
+            expected = """<xbundle>
+  <metadata>
+    <policies semester="2013_Spring">
+      <gradingpolicy>y:2</gradingpolicy>
+      <policy>x:1</policy>
+    </policies>
+    <about>
+      <file filename="overview.html">hello overview</file>
+    </about>
+  </metadata>
+  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name_orig="2013_Spring">
+    <chapter display_name="Intro" url_name_orig="Intro_chapter">
+      <sequential display_name="Overview">
+        <html display_name="Overview text" url_name_orig="Overview_text_html">
+        hello world
+      </html>
+      </sequential>
+      <!-- a comment -->
+    </chapter>
+  </course>
+</xbundle>
+"""
+            self.assertEqual(expected, bundle_string)
+
+        def test_preserve_url_name(self):
+            """
+            Test that preserve_url_name imports as url_name and not url_name_orig.
+            """
+            bundle = XBundle(
+                keep_urls=True, keep_studio_urls=True, preserve_url_name=True)
+            bundle.import_from_directory('input_testdata/mitx.01')
+
+            bundle_string = str(bundle)
+
+            expected = """<xbundle>
+  <metadata>
+    <policies semester="2013_Spring">
+      <gradingpolicy>y:2</gradingpolicy>
+      <policy>x:1</policy>
+    </policies>
+    <about>
+      <file filename="overview.html">hello overview</file>
+    </about>
+  </metadata>
+  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name="2013_Spring">
+    <chapter display_name="Intro" url_name="Intro_chapter">
+      <sequential display_name="Overview">
+        <html display_name="Overview text" url_name="Overview_text_html">
+        hello world
+      </html>
+      </sequential>
+      <!-- a comment -->
+    </chapter>
+  </course>
+</xbundle>
+"""
+            self.assertEqual(expected, bundle_string)
+            
     suite = unittest.makeSuite(TestXBundle)
     ttr = unittest.TextTestRunner()
     ttr.run(suite)

@@ -1,0 +1,6 @@
+<chapter display_name="Intro">
+  <sequential display_name="Overview">
+    <html url_name="Overview_text_html"/>
+  </sequential>
+  <!-- a comment -->
+</chapter>
