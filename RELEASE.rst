@@ -1,6 +1,11 @@
 xbundle Release Notes
 =====================
 
+0.3.0 Release
+
+- Added preserve_url_name flag to keep url_name in imported XML.
+- Python 3.x compatibility
+
 0.2.0 Release
 
 - standardized setup.py metadata
