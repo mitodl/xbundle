@@ -271,52 +271,54 @@ class XBundle(object):
         url_name = xml.get('url_name', '')
         if xml.tag in DESCRIPTOR_TAGS and 'url_name' in xml.attrib and url_name:
             # XML stores path separator as a colon.
+            log.debug("xml.tag: " + xml.tag + " is in DESCRIPTOR_TAGS and url_name (" + url_name + ") is in xml.attrib;")
             unfn = url_name.replace(':', '/')
             filename = join(path, xml.tag, (unfn + '.xml'))
-            if not exists(filename):
-                return xml
-            try:
-                dxml = etree.parse(filename).getroot()
-            except Exception as err:
-                log.error("Error parsing xml for %s", filename)
-                raise
-            try:
-                dxml.attrib.update(xml.attrib)
-            except Exception as err:
-                msg = (
-                    "[xbundle] error updating attribute, dxml=%s\nxml=%s"
-                    "dxml.attrib=%s xml.attrib=%s (likely your version "
-                    "of lxml is too old (need version >= 3)"
-                )
-                log.error(
-                    msg, etree.tostring(dxml), etree.tostring(xml),
-                    dxml.attrib, xml.attrib,
-                )
-                raise
-            dxml.attrib.pop('url_name')
+            if exists(filename):
+                try:
+                    log.debug("and filename " + filename + " exists; parsing.")
+                    dxml = etree.parse(filename).getroot()
+                    log.debug("dxml is:  " + str(dxml))
+                except Exception as err:
+                    log.error("Error parsing xml for %s", filename)
+                    raise
+                try:
+                    dxml.attrib.update(xml.attrib)
+                except Exception as err:
+                    msg = (
+                        "[xbundle] error updating attribute, dxml=%s\nxml=%s"
+                        "dxml.attrib=%s xml.attrib=%s (likely your version "
+                        "of lxml is too old (need version >= 3)"
+                    )
+                    log.error(
+                        msg, etree.tostring(dxml), etree.tostring(xml),
+                        dxml.attrib, xml.attrib,
+                    )
+                    raise
+                dxml.attrib.pop('url_name')
 
-            # Keep url_name as url_name_orig.
-            if self.keep_urls and self.is_not_random_urlname(url_name):
-                if self.preserve_url_name:
-                    dxml.set('url_name', url_name)
-                else:
-                    dxml.set('url_name_orig', url_name)
+                # Keep url_name as url_name_orig.
+                if self.keep_urls and self.is_not_random_urlname(url_name):
+                    if self.preserve_url_name:
+                        dxml.set('url_name', url_name)
+                    else:
+                        dxml.set('url_name_orig', url_name)
 
-            if dxml.tag in DESCRIPTOR_TAGS and dxml.get('display_name') is None:
-                # Special case: don't add display_name to course.
-                if dxml.tag != 'course':
-                    dxml.set('display_name', url_name)
+                if dxml.tag in DESCRIPTOR_TAGS and dxml.get('display_name') is None:
+                    # Special case: don't add display_name to course.
+                    if dxml.tag != 'course':
+                        dxml.set('display_name', url_name)
 
-            if self.skip_hidden:
-                self.update_metadata_from_policy(dxml)
-                if xml.get('hide_from_toc', '') == 'true':
-                    log.debug(
-                        "[xbundle] Skipping %s (%s), it has hide_from_toc=true",
-                        xml.tag, xml.get('display_name', '<noname>'))
+                if self.skip_hidden:
+                    self.update_metadata_from_policy(dxml)
+                    if xml.get('hide_from_toc', '') == 'true':
+                        log.debug(
+                            "[xbundle] Skipping %s (%s), it has hide_from_toc=true",
+                            xml.tag, xml.get('display_name', '<noname>'))
+                    else:
+                        xml = dxml
                 else:
                     xml = dxml
-            else:
-                xml = dxml
 
         filename = xml.get('filename', '')
         # Special for <html filename="..." display_name="..."/>.
