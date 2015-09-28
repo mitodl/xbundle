@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 XBundle class
 
@@ -17,6 +16,7 @@ the file, and it can import and export to standard edX (unbundled) format.
 """
 
 from __future__ import unicode_literals
+from __future__ import print_function
 
 import os
 import re
@@ -35,7 +35,7 @@ POLICY_TAG_MAP = {'policy': 'policy', 'gradingpolicy': 'grading_policy'}
 
 # star-args aren't offensive, and pylint has a lot of trouble with
 # members in the lxml package.
-# pylint: disable=no-member,star-args
+# pylint: disable=no-member
 
 DESCRIPTOR_TAGS = set([
     'course', 'chapter', 'sequential', 'vertical', 'html', 'problem', 'video',
@@ -44,6 +44,8 @@ DESCRIPTOR_TAGS = set([
     'staffgrading',
 ])
 
+
+# pylint: disable=too-many-instance-attributes
 class XBundle(object):
     """
     An XBundle is defined by two elements: course and metadata.
@@ -53,7 +55,7 @@ class XBundle(object):
             self, keep_urls=False, force_studio_format=False,
             skip_hidden=False, keep_studio_urls=False,
             no_overwrite=None, preserve_url_name=False,
-        ):
+    ):  # pylint: disable=too-many-arguments
         """
         if keep_urls=True then the original url_name attributes are kept upon
                      import and export,
@@ -61,7 +63,8 @@ class XBundle(object):
 
         if keep_studio_urls=True and keep_urls=True, then keep random urls.
 
-        if preserve_url_name=True, store urls as url_name instead of url_name_orig
+        if preserve_url_name=True, store urls as url_name
+        instead of url_name_orig
 
         no_overwrite: optional list of xml tags for which files should not
                       be overwritten (eg course)
@@ -88,12 +91,12 @@ class XBundle(object):
         if not xml.tag == 'course':
             log.error('set_course should be called with a <course> element')
             return
-        if not 'org' in xml.attrib:
+        if 'org' not in xml.attrib:
             xml.set('org', "MITx")
         semester = xml.get('url_name', xml.get('semester', ''))
         if semester == "":
             log.error("No semester found.")
-        if not 'semester' in xml.attrib:
+        if 'semester' not in xml.attrib:
             xml.set('semester', semester)
         self.semester = semester
         self.course = xml
@@ -176,7 +179,7 @@ class XBundle(object):
         for pdir in glob(join(path, 'policies/*')):
             policies = etree.Element('policies')
             policies.set('semester', basename(pdir))
-            policy_files = set(["policy.json", "grading_policy.json"])
+            policy_files = ["grading_policy.json", "policy.json"]
             for filename in glob(join(pdir, '*.json')):
                 if basename(filename) not in policy_files:
                     continue
@@ -260,6 +263,7 @@ class XBundle(object):
                 if xml.get(key, None) is None:
                     xml.set(key, str(val))
 
+    # pylint: disable=too-many-branches, too-many-statements
     def import_xml_removing_descriptor(self, path, xml):
         """
         Load XML file, recursively following and removing intermediate
@@ -269,9 +273,13 @@ class XBundle(object):
         then use its url_name, if that is available.
         """
         url_name = xml.get('url_name', '')
-        if xml.tag in DESCRIPTOR_TAGS and 'url_name' in xml.attrib and url_name:
+        if xml.tag in DESCRIPTOR_TAGS and \
+                'url_name' in xml.attrib and url_name:
             # XML stores path separator as a colon.
-            log.debug("xml.tag: " + xml.tag + " is in DESCRIPTOR_TAGS and url_name (" + url_name + ") is in xml.attrib;")
+            log.debug(
+                "xml.tag: " + xml.tag +
+                " is in DESCRIPTOR_TAGS and url_name (" + url_name +
+                ") is in xml.attrib;")
             unfn = url_name.replace(':', '/')
             filename = join(path, xml.tag, (unfn + '.xml'))
             if exists(filename):
@@ -304,7 +312,8 @@ class XBundle(object):
                     else:
                         dxml.set('url_name_orig', url_name)
 
-                if dxml.tag in DESCRIPTOR_TAGS and dxml.get('display_name') is None:
+                if dxml.tag in DESCRIPTOR_TAGS and \
+                        dxml.get('display_name') is None:
                     # Special case: don't add display_name to course.
                     if dxml.tag != 'course':
                         dxml.set('display_name', url_name)
@@ -313,7 +322,8 @@ class XBundle(object):
                     self.update_metadata_from_policy(dxml)
                     if xml.get('hide_from_toc', '') == 'true':
                         log.debug(
-                            "[xbundle] Skipping %s (%s), it has hide_from_toc=true",
+                            "[xbundle] Skipping %s (%s), "
+                            "it has hide_from_toc=true",
                             xml.tag, xml.get('display_name', '<noname>'))
                     else:
                         xml = dxml
@@ -516,10 +526,12 @@ class XBundle(object):
 
         for key, val in replacements.items():
             for char in key:
-                char_bytes = unicodedata.normalize('NFKD', char).encode('ascii', 'ignore')
-                val_bytes = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore')
+                char_bytes = unicodedata.normalize(
+                    'NFKD', char).encode('ascii', 'ignore')
+                val_bytes = unicodedata.normalize(
+                    'NFKD', val).encode('ascii', 'ignore')
                 display_name = display_name.replace(char_bytes, val_bytes)
-                
+
         if name and display_name in self.urlnames and parent:
             display_name = "{0}_{1}".format(display_name, parent)
         try:
@@ -545,8 +557,8 @@ class XBundle(object):
         descriptor = etree.Element('descriptor')
         descriptor.set('tag', xml.tag)
         uno = xml.get('url_name_orig', '')
-        if self.keep_urls and not url_name and uno and self.is_not_random_urlname(
-                uno):
+        if self.keep_urls and not url_name and \
+                uno and self.is_not_random_urlname(uno):
             url_name = uno
         if not url_name:
             url_name = self.make_urlname(xml, parent=parent)
@@ -574,12 +586,14 @@ class XBundle(object):
                     elem = vert
             if elem.tag in DESCRIPTOR_TAGS:
                 url_name = elem.get('url_name', '')
-                desc = self.make_descriptor(elem, url_name=url_name, parent=parent)
+                desc = self.make_descriptor(
+                    elem, url_name=url_name, parent=parent)
                 elem.addprevious(desc)
                 # Move descriptor to become new parent of elem.
                 desc.append(elem)
                 # Recursive call.
                 self.add_descriptors(elem, desc.get('url_name', ''))
+
 
 def mkdir(path):
     """
@@ -588,6 +602,7 @@ def mkdir(path):
     if not exists(path):
         os.makedirs(path)
     return path
+
 
 def pp_xml(xml):
     """
@@ -601,144 +616,15 @@ def pp_xml(xml):
         proc.stdin.write(etree.tostring(xml))
         proc.stdin.close()
         xml = proc.stdout.read()
-    except subprocess.CalledProcessError as ex:
+    except OSError as ex:
         log.warning("xmllint not found on system: %s", ex)
         xml = etree.tostring(xml, pretty_print=True)
 
-    if xml.startswith(b'<?xml '):
-        xml = xml.decode('utf-8').split('\n', 1)[1]
+    try:
+        xml = xml.decode('utf-8')
+    except AttributeError:
+        pass
+
+    if xml.startswith('<?xml '):
+        xml = xml.split('\n', 1)[1]
     return xml
-
-
-def run_tests():  # pragma: no cover
-    """
-    Run unit tests.
-    """
-    import unittest
-
-    class TestXBundle(unittest.TestCase):
-        """
-        xbundle tests
-        """
-        # pylint: disable=too-few-public-methods
-        def test_roundtrip(self):
-            """
-            Test import/export cycle.
-            """
-            print("Testing XBundle round trip import -> export")
-            bundle = XBundle()
-            cxmls = """
-<course semester="2013_Spring" course="mitx.01">
-  <chapter display_name="Intro">
-    <sequential display_name="Overview">
-      <html display_name="Overview text">
-        hello world
-      </html>
-    </sequential>
-    <!-- a comment -->
-  </chapter>
-</course>
-"""
-
-            pxmls = """
-<policies semester='2013_Spring'>
-  <gradingpolicy>y:2</gradingpolicy>
-  <policy>x:1</policy>
-</policies>
-"""
-
-            bundle.set_course(etree.XML(cxmls))
-            bundle.add_policies(etree.XML(pxmls))
-            bundle.add_about_file("overview.html", "hello overview")
-
-            xbin = str(bundle)
-
-            tdir = 'testdata'
-            if not exists(tdir):
-                os.mkdir(tdir)
-            bundle.export_to_directory(tdir)
-
-            # Test round- trip.
-            xb2 = XBundle()
-            xb2.import_from_directory(tdir + '/mitx.01')
-
-            xbreloaded = str(xb2)
-
-            if not xbin == xbreloaded:
-                print("xbin")
-                print(xbin)
-                print("xbreloaded")
-                print(xbreloaded)
-
-            self.assertEqual(xbin, xbreloaded)
-
-        def test_import_url_name(self):
-            """
-            Test that we import url_name as url_name_orig.
-            """
-            bundle = XBundle(keep_urls=True, keep_studio_urls=True)
-            bundle.import_from_directory('input_testdata/mitx.01')
-
-            bundle_string = str(bundle)
-
-            expected = """<xbundle>
-  <metadata>
-    <policies semester="2013_Spring">
-      <gradingpolicy>y:2</gradingpolicy>
-      <policy>x:1</policy>
-    </policies>
-    <about>
-      <file filename="overview.html">hello overview</file>
-    </about>
-  </metadata>
-  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name_orig="2013_Spring">
-    <chapter display_name="Intro" url_name_orig="Intro_chapter">
-      <sequential display_name="Overview">
-        <html display_name="Overview text" url_name_orig="Overview_text_html">
-        hello world
-      </html>
-      </sequential>
-      <!-- a comment -->
-    </chapter>
-  </course>
-</xbundle>
-"""
-            self.assertEqual(expected, bundle_string)
-
-        def test_preserve_url_name(self):
-            """
-            Test that preserve_url_name imports as url_name and not url_name_orig.
-            """
-            bundle = XBundle(
-                keep_urls=True, keep_studio_urls=True, preserve_url_name=True)
-            bundle.import_from_directory('input_testdata/mitx.01')
-
-            bundle_string = str(bundle)
-
-            expected = """<xbundle>
-  <metadata>
-    <policies semester="2013_Spring">
-      <gradingpolicy>y:2</gradingpolicy>
-      <policy>x:1</policy>
-    </policies>
-    <about>
-      <file filename="overview.html">hello overview</file>
-    </about>
-  </metadata>
-  <course semester="2013_Spring" course="mitx.01" org="MITx" url_name="2013_Spring">
-    <chapter display_name="Intro" url_name="Intro_chapter">
-      <sequential display_name="Overview">
-        <html display_name="Overview text" url_name="Overview_text_html">
-        hello world
-      </html>
-      </sequential>
-      <!-- a comment -->
-    </chapter>
-  </course>
-</xbundle>
-"""
-            self.assertEqual(expected, bundle_string)
-            
-    suite = unittest.makeSuite(TestXBundle)
-    ttr = unittest.TextTestRunner()
-    ttr.run(suite)
