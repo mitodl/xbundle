@@ -18,6 +18,7 @@ the file, and it can import and export to standard edX (unbundled) format.
 from __future__ import unicode_literals
 from __future__ import print_function
 
+import six
 import os
 import re
 import logging
@@ -37,12 +38,12 @@ POLICY_TAG_MAP = {'policy': 'policy', 'gradingpolicy': 'grading_policy'}
 # members in the lxml package.
 # pylint: disable=no-member
 
-DESCRIPTOR_TAGS = set([
+DESCRIPTOR_TAGS = {
     'course', 'chapter', 'sequential', 'vertical', 'html', 'problem', 'video',
     'conditional', 'combinedopenended', 'videosequence', 'problemset',
     'wrapper', 'poll_question', 'randomize', 'proctor', 'discussion',
     'staffgrading',
-])
+}
 
 
 # pylint: disable=too-many-instance-attributes
@@ -83,19 +84,20 @@ class XBundle(object):
         self.path = ""
         self.semester = ""
         self.export = None
+        self.policy = {}
 
     def set_course(self, xml):
         """
         Set self.course from the XML passed in.
         """
         if not xml.tag == 'course':
-            log.error('set_course should be called with a <course> element')
-            return
+            raise Exception(
+                'set_course should be called with a <course> element')
         if 'org' not in xml.attrib:
             xml.set('org', "MITx")
         semester = xml.get('url_name', xml.get('semester', ''))
         if semester == "":
-            log.error("No semester found.")
+            raise Exception("No semester found.")
         if 'semester' not in xml.attrib:
             xml.set('semester', semester)
         self.semester = semester
@@ -127,10 +129,10 @@ class XBundle(object):
             about = etree.SubElement(self.metadata, 'about')
         abfile = etree.SubElement(about, 'file')
         abfile.set('filename', filename)
-        abfile.text = filedata
+
         # Unicode characters in the "about" HTML file were causing
         # the lxml package to break.
-        if not isinstance(filedata, str):
+        if not isinstance(filedata, six.text_type):
             abfile.text = filedata.decode('utf-8')
         else:
             abfile.text = filedata
@@ -176,11 +178,11 @@ class XBundle(object):
         """
         Load policies.
         """
-        for pdir in glob(join(path, 'policies/*')):
+        for pdir in sorted(glob(join(path, 'policies/*'))):
             policies = etree.Element('policies')
             policies.set('semester', basename(pdir))
             policy_files = ["grading_policy.json", "policy.json"]
-            for filename in glob(join(pdir, '*.json')):
+            for filename in sorted(glob(join(pdir, '*.json'))):
                 if basename(filename) not in policy_files:
                     continue
                 elem = etree.SubElement(policies, basename(
@@ -190,7 +192,7 @@ class XBundle(object):
             self.add_policies(policies)
 
         # Load "about" files.
-        for afn in glob(join(path, 'about/*')):
+        for afn in sorted(glob(join(path, 'about/*'))):
             try:
                 with open(afn, "rb") as data:
                     self.add_about_file(
@@ -253,13 +255,13 @@ class XBundle(object):
         """
         Update metadata for this element from policy, if exists.
         """
-        policy = getattr(self, 'policy')
+        policy = self.policy
         pkey = '{0}/{1}'.format(
             xml.tag,
             xml.get('url_name', xml.get('url_name_orig', '<no_url_name>')),
         )
         if policy and pkey in policy:
-            for (key, val) in policy[pkey].iteritems():
+            for (key, val) in policy[pkey].items():
                 if xml.get(key, None) is None:
                     xml.set(key, str(val))
 
