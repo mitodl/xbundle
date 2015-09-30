@@ -1,0 +1,13 @@
+# Core requirements
+
+git
+python-pip
+python3-pip
+python-dev
+python3-dev
+
+# XML
+libxml2-dev
+libxslt1-dev
+libxslt1.1
+zlib1g-dev

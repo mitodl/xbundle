@@ -1,8 +1,5 @@
 *.py[cod]
 
-# Temporary test data
-testdata
-
 # C extensions
 *.so
 
@@ -35,3 +32,10 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Tox
+.cache
+
+# Coverage
+htmlcov/
+

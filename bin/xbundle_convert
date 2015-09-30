@@ -19,15 +19,16 @@ Options:
 """
 
 # stdlib
+import os
 import sys
 from pkg_resources import get_distribution
+from subprocess import check_call
 
 # PyPi
 from docopt import docopt
 
 # local
-from xbundle import XBundle, run_tests
-
+from xbundle import XBundle
 # pylint: disable=star-args
 
 
@@ -46,7 +47,9 @@ def main():
         options['force_studio_format'] = True
 
     if args['test']:
-        run_tests()
+        base_dir = os.path.dirname(os.path.realpath(os.path.join(
+            __file__, "..", "tox.ini")))
+        check_call(["tox"], cwd=base_dir)
         return
 
     bundle = XBundle(**options)
