@@ -1,0 +1,6 @@
+xbundle:
+  build: .
+  volumes:
+    - .:/src
+    - /tmp
+
