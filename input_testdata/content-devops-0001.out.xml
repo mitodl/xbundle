@@ -1,0 +1,484 @@
+<xbundle><metadata><policies semester="2015_Summer"><gradingpolicy>{
+    "GRADER": [
+        {
+            "drop_count": 2, 
+            "min_count": 12, 
+            "short_label": "HW", 
+            "type": "Homework", 
+            "weight": 0.15
+        }, 
+        {
+            "drop_count": 2, 
+            "min_count": 12, 
+            "type": "Lab", 
+            "weight": 0.15
+        }, 
+        {
+            "drop_count": 0, 
+            "min_count": 1, 
+            "short_label": "Midterm", 
+            "type": "Midterm Exam", 
+            "weight": 0.3
+        }, 
+        {
+            "drop_count": 0, 
+            "min_count": 1, 
+            "short_label": "Final", 
+            "type": "Final Exam", 
+            "weight": 0.4
+        }
+    ], 
+    "GRADE_CUTOFFS": {
+        "Pass": 0.5
+    }
+}</gradingpolicy><policy>{
+    "course/2015_Summer": {
+        "start": "2014-08-25T15:00",
+        "advanced_modules": [
+            "edx_sga", 
+            "lti"
+        ], 
+        "course_image": "devops_course_logo.jpg", 
+        "discussion_topics": {
+            "General": {
+                "id": "i4x-DevOps-0_001-course-2015_Summer"
+            }
+        }, 
+        "display_name": "Ops", 
+        "giturl": "git@github.mit.edu:mitx/content-devops-0001.git", 
+        "lti_passports": [
+            "mitxr:mitxr:pypoodMigyikbiwr"
+        ], 
+        "matlab_api_key": "SolsRMsNeis", 
+        "remote_gradebook": {
+            "name": "STELLAR:/project/mitxdemosite", 
+            "section": "devops01"
+        }, 
+        "tabs": [
+            {
+                "name": "Courseware", 
+                "type": "courseware"
+            }, 
+            {
+                "name": "Course Info", 
+                "type": "course_info"
+            }, 
+            {
+                "name": "Textbooks", 
+                "type": "textbooks"
+            }, 
+            {
+                "name": "Discussion", 
+                "type": "discussion"
+            }, 
+            {
+                "name": "Wiki", 
+                "type": "wiki"
+            }, 
+            {
+                "name": "Progress", 
+                "type": "progress"
+            }
+        ], 
+        "xml_attributes": {
+            "filename": [
+                "course/2015_Summer.xml", 
+                "course/2015_Summer.xml"
+            ]
+        }
+    }
+}</policy></policies><policies semester="assets.json"/><about><file filename="overview.html">&lt;section class="about"&gt;
+  &lt;h2&gt;About This Course&lt;/h2&gt;
+  &lt;p&gt;Include your long course description here. The long course description should contain 150-400 words.&lt;/p&gt;
+
+  &lt;p&gt;This is paragraph 2 of the long course description. Add more paragraphs as needed. Make sure to enclose them in paragraph tags.&lt;/p&gt;
+&lt;/section&gt;
+
+&lt;section class="prerequisites"&gt;
+  &lt;h2&gt;Prerequisites&lt;/h2&gt;
+  &lt;p&gt;Add information about course prerequisites here.&lt;/p&gt;
+&lt;/section&gt;
+
+&lt;section class="course-staff"&gt;
+  &lt;h2&gt;Course Staff&lt;/h2&gt;
+  &lt;article class="teacher"&gt;
+    &lt;div class="teacher-image"&gt;
+      &lt;img src="/static/images/pl-faculty.png" align="left" style="margin:0 20 px 0" alt="Course Staff Image #1"&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Staff Member #1&lt;/h3&gt;
+    &lt;p&gt;Biography of instructor/staff member #1&lt;/p&gt;
+  &lt;/article&gt;
+
+  &lt;article class="teacher"&gt;
+    &lt;div class="teacher-image"&gt;
+      &lt;img src="/static/images/pl-faculty.png" align="left" style="margin:0 20 px 0" alt="Course Staff Image #2"&gt;
+    &lt;/div&gt;
+
+    &lt;h3&gt;Staff Member #2&lt;/h3&gt;
+    &lt;p&gt;Biography of instructor/staff member #2&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/section&gt;
+
+&lt;section class="faq"&gt;
+  &lt;section class="responses"&gt;
+    &lt;h2&gt;Frequently Asked Questions&lt;/h2&gt;
+    &lt;article class="response"&gt;
+      &lt;h3&gt;Do I need to buy a textbook?&lt;/h3&gt;
+      &lt;p&gt;No, a free online version of Chemistry: Principles, Patterns, and Applications, First Edition by Bruce Averill and Patricia Eldredge will be available, though you can purchase a printed version (published by FlatWorld Knowledge) if you&#8217;d like.&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;article class="response"&gt;
+      &lt;h3&gt;Question #2&lt;/h3&gt;
+      &lt;p&gt;Your answer would be displayed here.&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/section&gt;
+</file></about></metadata><course advanced_modules="[&quot;edx_sga&quot;, &quot;lti&quot;]" course_image="devops_course_logo.jpg" display_name="Ops" giturl="git@github.mit.edu:mitx/content-devops-0001.git" lti_passports="[&quot;mitxr:mitxr:pypoodMigyikbiwr&quot;]" matlab_api_key="SolsRMsNeis" remote_gradebook="{&quot;section&quot;: &quot;devops01&quot;, &quot;name&quot;: &quot;STELLAR:/project/mitxdemosite&quot;}" org="DevOps" course="0.001" semester="2015_Summer"><chapter display_name="Regression tests"><sequential display_name="Jasmine" start="2030-01-01T00:00:00Z"><vertical display_name="HTML"><html display_name="Jasmine tests: HTML module edition" editor="raw"><head><link rel="stylesheet" type="text/css" href="/static/jasmine.css"/><script type="text/javascript" src="/static/jasmine.js"/><script type="text/javascript" src="/static/jasmine-html.js"/><script type="text/javascript" src="/static/boot.js"/><!-- Where all of the tests are defined --><script type="text/javascript" src="/static/jasmine-tests.js"/><script>
+  (function () {
+    window.runJasmineTests()
+  }());
+</script></head><body><h2>Jasmine tests: HTML module edition</h2><h3>Did it break? Dunno; let's find out.</h3><p>Some of the libraries tested are only served by the LMS for courseware, therefore, some tests can be expected to fail if executed in Studio.</p><!-- Where Jasmine will inject its output (dictated in boot.js) --><div id="jasmine-tests"><em>Test output will generate here when viewing in LMS.</em></div></body></html></vertical><vertical display_name="JS Input"><problem display_name="Jasmine tests: JS Input problem edition (same origin)" markdown="null"><script type="loncapa/python">
+import json
+def grader_cfn(e, ans):
+  par = json.loads(ans)
+
+  # We can use the value of the answer key to grade
+  answer = json.loads(par["answer"])
+  return answer["works"]
+
+  state = json.loads(par["state"])
+  answer = state['answer']
+  return state["works"]
+</script><h3>Did it break? Dunno; let's find out.</h3><p>Some of the libraries tested are only served by the LMS for courseware, therefore, some tests can be expected to fail if executed in Studio.</p><customresponse cfn="grader_cfn"><jsinput gradefn="getJSInputGrade" set_statefn="setJSInputState" get_statefn="getJSInputState" width="100%" height="1000" html_file="/static/jsinput-tests.html"/></customresponse></problem></vertical></sequential></chapter><chapter display_name="Content/problem tests"><sequential display_name="JS Input"><vertical display_name="initial_state basic"><problem display_name="Custom Javascript Display and Grading" markdown="null"><script type="loncapa/python">
+import json
+def vglcfn(e, ans):
+  '''
+  par is a dictionary containing two keys, "answer" and "state"
+  The value of answer is the JSON string returned by getGrade
+  The value of state is the JSON string returned by getState
+  '''
+  par = json.loads(ans)
+  # We can use either the value of the answer key to grade
+  answer = json.loads(par["answer"])
+  return answer["cylinder"] and not answer["cube"]
+  '''
+  # Or we could use the value of the state key
+  state = json.loads(par["state"])
+  selectedObjects = state["selectedObjects"]
+  return selectedObjects["cylinder"] and not selectedObjects["cube"]
+  '''
+
+</script><h1><strong>BOTH 3D SHAPES SHOULD BE HIGHLIGHTED YELLOW WHEN THE JS INPUT PROBLEM FINISHES LOADING; IF EITHER IS BLUE, THE "initial_state" JS INPUT ATTRIBUTE IS NOT FUNCTIONING PROPERLY.</strong></h1><p>
+The shapes below can be selected (yellow) or unselected (cyan).
+Clicking on them repeatedly will cycle through these two states.
+</p><p>
+If the cone is selected (and not the cube), a correct answer will be
+generated after pressing "Check". Clicking on either "Check" or "Save"
+will register the current state.
+</p><customresponse cfn="vglcfn"><jsinput gradefn="WebGLDemo.getGrade" get_statefn="WebGLDemo.getState" set_statefn="WebGLDemo.setState" initial_state="{&quot;selectedObjects&quot;:{&quot;cube&quot;:true,&quot;cylinder&quot;:true}}" width="400" height="400" html_file="https://studio.edx.org/c4x/edX/DemoX/asset/webGLDemo.html" sop="false"/></customresponse></problem></vertical></sequential><sequential display_name="Video"><vertical display_name="Transcripts"><video youtube="1.00:OEoXaMPEzfM" display_name="Video" download_video="false" html5_sources="[]" sub="OEoXaMPEzfM" youtube_id_1_0="OEoXaMPEzfM"/></vertical></sequential><sequential display_name="Sample problems" format="Homework" graded="true" start="2030-01-01T00:00:00Z"><vertical display_name="Common problems"><problem display_name="Checkboxes" markdown="A checkboxes problem presents checkbox buttons for student input. Students can select more than one option presented.&#10;&gt;&gt;Select the answer that matches&lt;&lt;&#10;&#10;[x] correct&#10;[ ] incorrect&#10;[x] correct&#10;"><p>A checkboxes problem presents checkbox buttons for student input. Students can select more than one option presented.</p><p>Select the answer that matches</p><choiceresponse><checkboxgroup label="Select the answer that matches" direction="vertical"><choice correct="true">correct</choice><choice correct="false">incorrect</choice><choice correct="true">correct</choice></checkboxgroup></choiceresponse></problem><problem display_name="Dropdown" markdown="Dropdown problems give a limited set of options for students to respond with, and present those options in a format that encourages them to search for a specific answer rather than being immediately presented with options from which to recognize the correct answer.&#10;&#10;The answer options and the identification of the correct answer is defined in the &lt;b&gt;optioninput&lt;/b&gt; tag.&#10;&#10;&gt;&gt;Translation between Dropdown and __________ is extremely straightforward:&lt;&lt;&#10;&#10;[[(Multiple Choice), Text Input, Numerical Input, External Response, Image Response]]&#10;&#10;[explanation]&#10;Multiple Choice also allows students to select from a variety of pre-written responses, although the format makes it easier for students to read very long response options. Dropdowns also differ slightly because students are more likely to think of an answer and then search for it rather than relying purely on recognition to answer the question.&#10;[explanation]&#10;"><p>Dropdown problems give a limited set of options for students to respond with, and present those options in a format that encourages them to search for a specific answer rather than being immediately presented with options from which to recognize the correct answer.</p><p>The answer options and the identification of the correct answer is defined in the <b>optioninput</b> tag.</p><p>Translation between Dropdown and __________ is extremely straightforward:</p><optionresponse><optioninput label="Translation between Dropdown and __________ is extremely straightforward:" options="('Multiple Choice','Text Input','Numerical Input','External Response','Image Response')" correct="Multiple Choice"/></optionresponse><solution><div class="detailed-solution"><p>Explanation</p><p>Multiple Choice also allows students to select from a variety of pre-written responses, although the format makes it easier for students to read very long response options. Dropdowns also differ slightly because students are more likely to think of an answer and then search for it rather than relying purely on recognition to answer the question.</p></div></solution></problem><problem display_name="Multiple Choice" markdown="A multiple choice problem presents radio buttons for student input. Students can only select a single option presented. Multiple Choice questions have been the subject of many areas of research due to the early invention and adoption of bubble sheets.&#10;&#10;One of the main elements that goes into a good multiple choice question is the existence of good distractors. That is, each of the alternate responses presented to the student should be the result of a plausible mistake that a student might make.&#10;&#10;&gt;&gt;What Apple device competed with the portable CD player?&lt;&lt;&#10;     ( ) The iPad&#10;     ( ) Napster&#10;     (x) The iPod&#10;     ( ) The vegetable peeler&#10;     &#10;[explanation]&#10;The release of the iPod allowed consumers to carry their entire music library with them in a format that did not rely on fragile and energy-intensive spinning disks.&#10;[explanation]&#10;"><p>
+A multiple choice problem presents radio buttons for student
+input. Students can only select a single option presented. Multiple Choice questions have been the subject of many areas of research due to the early invention and adoption of bubble sheets.</p><p> One of the main elements that goes into a good multiple choice question is the existence of good distractors. That is, each of the alternate responses presented to the student should be the result of a plausible mistake that a student might make. 
+</p><p>What Apple device competed with the portable CD player?</p><multiplechoiceresponse><choicegroup type="MultipleChoice" label="What Apple device competed with the portable CD player?"><choice correct="false" name="ipad">The iPad</choice><choice correct="false" name="beatles">Napster</choice><choice correct="true" name="ipod">The iPod</choice><choice correct="false" name="peeler">The vegetable peeler</choice></choicegroup></multiplechoiceresponse><solution><div class="detailed-solution"><p>Explanation</p><p>The release of the iPod allowed consumers to carry their entire music library with them in a format that did not rely on fragile and energy-intensive spinning disks. </p></div></solution></problem><problem display_name="Numerical Input" markdown="A numerical input problem accepts a line of text input from the student, and evaluates the input for correctness based on its numerical value.&#10;&#10;The answer is correct if it is within a specified numerical tolerance of the expected answer.&#10;&#10;&gt;&gt;Enter the numerical value of Pi:&lt;&lt;&#10;= 3.14159 +- .02&#10;&#10;&gt;&gt;Enter the approximate value of 502*9:&lt;&lt;&#10;= 4518 +- 15%&#10;&#10;&gt;&gt;Enter the number of fingers on a human hand&lt;&lt;&#10;= 5&#10;&#10;[explanation]&#10;Pi, or the the ratio between a circle's circumference to its diameter, is an irrational number known to extreme precision. It is value is approximately equal to 3.14.&#10;&#10;Although you can get an exact value by typing 502*9 into a calculator, the result will be close to 500*10, or 5,000. The grader accepts any response within 15% of the true value, 4518, so that you can use any estimation technique that you like.&#10;&#10;If you look at your hand, you can count that you have five fingers.&#10;[explanation]&#10;"><p>
+A numerical input problem accepts a line of text input from the
+student, and evaluates the input for correctness based on its
+numerical value.  
+</p><p>
+The answer is correct if it is within a specified numerical tolerance
+of the expected answer.
+</p><script type="loncapa/python">
+computed_response = 502*9
+</script><p>Enter the numerical value of Pi:
+    <numericalresponse answer="3.14159"><responseparam type="tolerance" default=".02"/><formulaequationinput label="Enter the numerical value of Pi"/></numericalresponse>
+</p><p>Enter the approximate value of 502*9:
+    <numericalresponse answer="$computed_response"><responseparam type="tolerance" default="15%"/><formulaequationinput label="Enter the approximate value of 502 times 9"/></numericalresponse>
+</p><p>Enter the number of fingers on a human hand:
+    <numericalresponse answer="5"><formulaequationinput label="Enter the number of fingers on a human hand"/></numericalresponse>
+</p><solution><div class="detailed-solution"><p>Explanation</p><p>Pi, or the the ratio between a circle's circumference to its diameter, is an irrational number known to extreme precision. It is value is approximately equal to 3.14.</p><p>Although you can get an exact value by typing 502*9 into a calculator, the result will be close to 500*10, or 5,000. The grader accepts any response within 15% of the true value, 4518, so that you can use any estimation technique that you like.</p><p>If you look at your hand, you can count that you have five fingers.</p></div></solution></problem><problem display_name="Text Input" markdown="A text input problem accepts a line of text from the student, and evaluates the input for correctness based on an expected answer.&#10;&#10;The answer is correct if it matches every character of the expected answer. This can be a problem with international spelling, dates, or anything where the format of the answer is not clear.&#10;&#10;&gt;&gt;Which US state has Lansing as its capital?&lt;&lt;&#10;&#10;= Michigan&#10;&#10;&#10;[explanation]&#10;Lansing is the capital of Michigan, although it is not Michigan's largest city, or even the seat of the county in which it resides.&#10;[explanation]&#10;"><p>
+
+A text input problem accepts a line of text from the
+student, and evaluates the input for correctness based on an expected
+answer.
+</p><p>
+The answer is correct if it matches every character of the expected answer. This can be a problem with international spelling, dates, or anything where the format of the answer is not clear. 
+</p><p>Which US state has Lansing as its capital? </p><stringresponse answer="Michigan" type="ci"><textline size="20" label="Which US state has Lansing as its capital?"/></stringresponse><solution><div class="detailed-solution"><p>Explanation</p><p>Lansing is the capital of Michigan, although it is not Michigan's largest city, or even the seat of the county in which it resides.</p></div></solution></problem></vertical><vertical display_name="Circuit schematic builder"><problem display_name="Circuit Schematic Builder" markdown="null">
+  Please make a voltage divider that splits the provided voltage evenly.
+
+<schematicresponse><center><schematic height="500" width="600" parts="g,r" analyses="dc" initial_value="[[&quot;v&quot;,[168,144,0],{&quot;value&quot;:&quot;dc(1)&quot;,&quot;_json_&quot;:0},[&quot;1&quot;,&quot;0&quot;]],[&quot;r&quot;,[296,120,0],{&quot;r&quot;:&quot;1&quot;,&quot;_json_&quot;:1},[&quot;1&quot;,&quot;output&quot;]],[&quot;L&quot;,[296,168,3],{&quot;label&quot;:&quot;output&quot;,&quot;_json_&quot;:2},[&quot;output&quot;]],[&quot;w&quot;,[296,216,168,216]],[&quot;w&quot;,[168,216,168,192]],[&quot;w&quot;,[168,144,168,120]],[&quot;w&quot;,[168,120,296,120]],[&quot;g&quot;,[168,216,0],{&quot;_json_&quot;:7},[&quot;0&quot;]],[&quot;view&quot;,-67.49999999999994,-78.49999999999994,1.6000000000000003,&quot;50&quot;,&quot;10&quot;,&quot;1G&quot;,null,&quot;100&quot;,&quot;1&quot;,&quot;1000&quot;]]"/></center><answer type="loncapa/python">
+dc_value = "dc analysis not found"
+for response in submission[0]:
+  if response[0] == 'dc':
+      for node in response[1:]:
+          dc_value = node['output']
+
+if dc_value == .5:
+  correct = ['correct']
+else:
+  correct = ['incorrect']
+</answer></schematicresponse>
+<schematicresponse><p>Make a high pass filter</p><center><schematic height="500" width="600" parts="g,r,s,c" analyses="ac" submit_analyses="{&quot;ac&quot;:[[&quot;NodeA&quot;,1,9]]}" initial_value="[[&quot;v&quot;,[160,152,0],{&quot;name&quot;:&quot;v1&quot;,&quot;value&quot;:&quot;sin(0,1,1,0,0)&quot;,&quot;_json_&quot;:0},[&quot;1&quot;,&quot;0&quot;]],[&quot;w&quot;,[160,200,240,200]],[&quot;g&quot;,[160,200,0],{&quot;_json_&quot;:2},[&quot;0&quot;]],[&quot;L&quot;,[240,152,3],{&quot;label&quot;:&quot;NodeA&quot;,&quot;_json_&quot;:3},[&quot;NodeA&quot;]],[&quot;s&quot;,[240,152,0],{&quot;color&quot;:&quot;cyan&quot;,&quot;offset&quot;:&quot;0&quot;,&quot;_json_&quot;:4},[&quot;NodeA&quot;]],[&quot;view&quot;,64.55878906250004,54.114697265625054,2.5000000000000004,&quot;50&quot;,&quot;10&quot;,&quot;1G&quot;,null,&quot;100&quot;,&quot;1&quot;,&quot;1000&quot;]]"/></center><answer type="loncapa/python">
+ac_values = None
+for response in submission[0]:
+  if response[0] == 'ac':
+      for node in response[1:]:
+          ac_values = node['NodeA']
+print "the ac analysis value:", ac_values
+if ac_values == None:
+  correct = ['incorrect']
+elif ac_values[0][1] &lt; ac_values[1][1]:
+  correct = ['correct']
+else:
+  correct = ['incorrect']
+</answer></schematicresponse>
+
+    <solution><div class="detailed-solution"><p>Explanation</p><p>A voltage divider that evenly divides the input voltage can be formed with two identically valued resistors, with the sampled voltage taken in between the two.</p><p><img alt="correct voltage divider schematic" src="/static/images/voltage_divider.png"/></p><p>A simple high-pass filter without any further constaints can be formed by simply putting a resister in series with a capacitor. The actual values of the components do not really matter in order to meet the constraints of the problem.</p><p><img alt="correct high pass filter" src="/static/images/high_pass_filter.png"/></p></div></solution>
+</problem></vertical><vertical display_name="JS Input"><problem display_name="Custom Javascript Display and Grading" markdown="null"><script type="loncapa/python">
+import json
+def vglcfn(e, ans):
+  '''
+  par is a dictionary containing two keys, "answer" and "state"
+  The value of answer is the JSON string returned by getGrade
+  The value of state is the JSON string returned by getState
+  '''
+  par = json.loads(ans)
+  # We can use either the value of the answer key to grade
+  answer = json.loads(par["answer"])
+  return answer["cylinder"] and not answer["cube"]
+  '''
+  # Or we could use the value of the state key
+  state = json.loads(par["state"])
+  selectedObjects = state["selectedObjects"]
+  return selectedObjects["cylinder"] and not selectedObjects["cube"]
+  '''
+
+</script><p>
+The shapes below can be selected (yellow) or unselected (cyan).
+Clicking on them repeatedly will cycle through these two states.
+</p><p>
+If the cone is selected (and not the cube), a correct answer will be
+generated after pressing "Check". Clicking on either "Check" or "Save"
+will register the current state.
+</p><customresponse cfn="vglcfn"><jsinput gradefn="WebGLDemo.getGrade" get_statefn="WebGLDemo.getState" set_statefn="WebGLDemo.setState" initial_state="{&quot;selectedObjects&quot;:{&quot;cube&quot;:true,&quot;cylinder&quot;:false}}" width="400" height="400" html_file="https://studio.edx.org/c4x/edX/DemoX/asset/webGLDemo.html" sop="false"/></customresponse></problem></vertical><vertical display_name="Python evaluated"><problem display_name="Custom Python-Evaluated Input" markdown="null"><p>
+A custom python-evaluated input problem accepts one or more lines of text input from the
+student, and evaluates the inputs for correctness based on evaluation using a 
+python script embedded within the problem.
+</p><script type="loncapa/python">
+
+def test_add(expect, ans):
+    try:
+        a1=int(ans[0])
+        a2=int(ans[1])
+        return (a1+a2) == int(expect)
+    except ValueError:
+        return False
+
+def test_add_to_ten(expect, ans):
+    return test_add(10, ans)
+
+</script><p>Enter two integers which sum to 10: </p><customresponse cfn="test_add_to_ten"><textline size="40" correct_answer="3" label="Integer #1"/><br/><textline size="40" correct_answer="7" label="Integer #2"/></customresponse><p>Enter two integers which sum to 20: </p><customresponse cfn="test_add" expect="20"><textline size="40" correct_answer="11" label="Integer #1"/><br/><textline size="40" correct_answer="9" label="Integer #2"/></customresponse><solution><div class="detailed-solution"><p>Explanation</p><p>Any set of integers on the line \(y = 10 - x\) and \(y = 20 - x\) satisfy these constraints.</p><img alt="Line graph of possibly correct answers" src="/static/images/simple_graph.png"/></div></solution></problem></vertical><vertical display_name="Drag and drop"><problem display_name="Drag and Drop" markdown="null">
+  Here's an example of a "Drag and Drop" question set. Click and drag each word in the scrollbar below, up to the numbered bucket which matches the number of letters in the word.
+   <customresponse><drag_and_drop_input img="https://studio.edx.org/c4x/edX/DemoX/asset/L9_buckets.png"><draggable id="1" label="a"/><draggable id="2" label="cat"/><draggable id="3" label="there"/><draggable id="4" label="pear"/><draggable id="5" label="kitty"/><draggable id="6" label="in"/><draggable id="7" label="them"/><draggable id="8" label="za"/><draggable id="9" label="dog"/><draggable id="10" label="slate"/><draggable id="11" label="few"/></drag_and_drop_input><answer type="loncapa/python">
+correct_answer = {
+        '1':      [[70, 150], 121],
+        '6':      [[190, 150], 121],
+        '8':      [[190, 150], 121],
+        '2':      [[310, 150], 121],
+        '9':      [[310, 150], 121],
+        '11':     [[310, 150], 121],
+        '4':      [[420, 150], 121],
+        '7':      [[420, 150], 121],
+        '3':      [[550, 150], 121],
+        '5':      [[550, 150], 121],
+        '10':     [[550, 150], 121]}
+if draganddrop.grade(submission[0], correct_answer):
+    correct = ['correct']
+else:
+    correct = ['incorrect']
+        </answer></customresponse>
+    <customresponse><text><h2>Drag and Drop with Outline</h2><p>Please label hydrogen  atoms connected with left carbon atom.</p></text><drag_and_drop_input img="https://studio.edx.org/c4x/edX/DemoX/asset/ethglycol.jpg" target_outline="true" one_per_target="true" no_labels="true" label_bg_color="rgb(222, 139, 238)"><draggable id="1" label="Hydrogen"/><draggable id="2" label="Hydrogen"/><target id="t1_o" x="10" y="67" w="100" h="100"/><target id="t2" x="133" y="3" w="70" h="70"/><target id="t3" x="2" y="384" w="70" h="70"/><target id="t4" x="95" y="386" w="70" h="70"/><target id="t5_c" x="94" y="293" w="91" h="91"/><target id="t6_c" x="328" y="294" w="91" h="91"/><target id="t7" x="393" y="463" w="70" h="70"/><target id="t8" x="344" y="214" w="70" h="70"/><target id="t9_o" x="445" y="162" w="100" h="100"/><target id="t10" x="591" y="132" w="70" h="70"/></drag_and_drop_input><answer type="loncapa/python">
+correct_answer = [{
+    'draggables': ['1', '2'],
+    'targets': ['t2', 't3', 't4' ],
+    'rule':'anyof'
+}]
+if draganddrop.grade(submission[0], correct_answer):
+    correct = ['correct']
+else:
+    correct = ['incorrect']
+        </answer></customresponse>
+</problem></vertical><vertical display_name="Image mapped"><problem display_name="Image Mapped Input" markdown="null"><p>
+    An image mapped input problem presents an image for the student.
+    Input is given by the location of mouse clicks on the image.
+    Correctness of input can be evaluated based on expected dimensions of a rectangle.
+  </p><p>Which animal shown below is a kitten?</p><imageresponse><imageinput src="https://studio.edx.org/c4x/edX/DemoX/asset/Dog-and-Cat.jpg" width="640" height="400" rectangle="(385,98)-(600,337)"/></imageresponse><solution><div class="detailed-solution"><p>Explanation</p><p>The animal on the right is a kitten. The animal on the left is a puppy, not a kitten.</p></div></solution></problem></vertical><vertical display_name="Math expression"><problem display_name="Math Expression Input" markdown="null"><p>
+A math expression input problem accepts a line of text representing a mathematical expression from the
+student, and evaluates the input for equivalence to a mathematical expression provided by the 
+grader. Correctness is based on numerical sampling of the symbolic expressions.
+</p><p>
+The answer is correct if both the student provided response and the grader's mathematical
+expression are equivalent to specified numerical tolerance, over a specified range of values for each
+variable.
+</p><p>This kind of response checking can handle symbolic expressions, but places an extra burden
+on the problem author to specify the allowed variables in the expression, and the
+numerical ranges over which the variables must be sampled in order to test for correctness.</p><script type="loncapa/python">
+VoVi = "(R_1*R_2)/R_3"
+</script><p>Give an equation for the relativistic energy of an object with mass m.  Explicitly indicate multiplication with a <tt>*</tt> symbol.</p><formularesponse type="cs" samples="m,c@1,2:3,4#10" answer="m*c^2"><responseparam type="tolerance" default="0.00001"/><br/><text>E =</text><formulaequationinput size="40"/></formularesponse><p>The answer to this question is (R_1*R_2)/R_3. </p><formularesponse type="ci" samples="R_1,R_2,R_3@1,2,3:3,4,5#10" answer="$VoVi"><responseparam type="tolerance" default="0.00001"/><formulaequationinput size="40" label="Enter the equation"/></formularesponse><solution><div class="detailed-solution"><p>Explanation</p><p>The mathematical summary of many of the theory of relativity developed by Einstein is that the amount of energy contained in a mass m is the mass time the speed of light squared.</p><p>As you can see with the formula entry, the answer is \(\frac{R_1*R_2}{R_3}\)</p></div></solution></problem></vertical><vertical display_name="Peer assessment"><openassessment url_name="00b4fdc25b7946a784fc112c6425e917" allow_file_upload="False" allow_latex="False"><title/><assessments><assessment name="student-training"><example><answer>{u'parts': [{u'text': u'\n(optional) Replace this text with your own sample response for this assignment. Below, list the names of the criteria for this assignment, and then specify the name of the option that you would select for this response. Students will learn to assess responses by assessing this response and comparing the rubric options that they select with the rubric options that you specified.\n\nIf you don\'t want to provide sample responses and scores, delete the entire \'assessment name="student-training"\' element.\n'}]}</answer><select criterion="Ideas" option="Fair"/><select criterion="Content" option="Good"/></example><example><answer>{u'parts': [{u'text': u'\n(optional) Replace this text with another sample response, and then specify the options that you would select for this response below. To provide more sample responses, copy an "example" element and paste as many as you want before the closing "assessment" tag.\n'}]}</answer><select criterion="Ideas" option="Poor"/><select criterion="Content" option="Good"/></example></assessment><assessment name="peer-assessment" must_grade="5" must_be_graded_by="3"/><assessment name="self-assessment"/></assessments><rubric><prompt>
+    Censorship in the Libraries
+
+    'All of us can think of a book that we hope none of our children or any other children have taken off the shelf. But if I have the right to remove that book from the shelf -- that work I abhor -- then you also have exactly the same right and so does everyone else. And then we have no books left on the shelf for any of us.' --Katherine Paterson, Author
+
+    Write a persuasive essay to a newspaper reflecting your views on censorship in libraries. Do you believe that certain materials, such as books, music, movies, magazines, etc., should be removed from the shelves if they are found offensive? Support your position with convincing arguments from your own experience, observations, and/or reading.
+
+    Read for conciseness, clarity of thought, and form.
+</prompt><criterion feedback="optional"><name>Ideas</name><label>Ideas</label><prompt>Determine if there is a unifying theme or main idea.</prompt><option points="0"><name>Poor</name><label>Poor</label><explanation>Difficult for the reader to discern the main idea.  Too brief or too repetitive to establish or maintain a focus.</explanation></option><option points="3"><name>Fair</name><label>Fair</label><explanation>Presents a unifying theme or main idea, but may include minor tangents.  Stays somewhat focused on topic and task.</explanation></option><option points="5"><name>Good</name><label>Good</label><explanation>Presents a unifying theme or main idea without going off on tangents.  Stays completely focused on topic and task.</explanation></option></criterion><criterion><name>Content</name><label>Content</label><prompt>Assess the content of the submission</prompt><option points="0"><name>Poor</name><label>Poor</label><explanation>Includes little information with few or no details or unrelated details.  Unsuccessful in attempts to explore any facets of the topic.</explanation></option><option points="1"><name>Fair</name><label>Fair</label><explanation>Includes little information and few or no details.  Explores only one or two facets of the topic.</explanation></option><option points="3"><name>Good</name><label>Good</label><explanation>Includes sufficient information and supporting details. (Details may not be fully developed; ideas may be listed.)  Explores some facets of the topic.</explanation></option><option points="3"><name>Excellent</name><label>Excellent</label><explanation>Includes in-depth information and exceptional supporting details that are fully developed.  Explores all facets of the topic.</explanation></option></criterion><feedbackprompt>
+    (Optional) What aspects of this response stood out to you? What did it do well? How could it improve?
+</feedbackprompt></rubric></openassessment></vertical><vertical display_name="Adaptive hint"><problem display_name="Problem with Adaptive Hint" markdown="null"><text><p><h4>Problem With Adaptive Hint</h4></p><p>
+This problem demonstrates a question with hints, based on using the <tt class="tt">hintfn</tt> method. </p><script type="text/python" system_path="python_lib">
+def test_str(expect, ans):
+  print expect, ans
+  ans = ans.strip("'")
+  ans = ans.strip('"')
+  return expect == ans.lower()
+
+def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
+  aid = answer_ids[0]
+  ans = str(student_answers[aid]).lower()
+  print 'hint_fn called, ans=', ans
+  hint = ''
+  if 'java' in ans:
+     hint = 'that is only good for drinking'
+  elif 'perl' in ans:
+     hint = 'not that rich'
+  elif 'pascal' in ans:
+     hint = 'that is a beatnick language'
+  elif 'fortran' in ans:
+     hint = 'those were the good days'
+  elif 'clu' in ans:
+     hint = 'you must be invariant'
+  if hint:
+    hint = "&lt;font color='blue'&gt;Hint: {0}&lt;/font&gt;".format(hint)
+    new_cmap.set_hint_and_mode(aid,hint,'always')
+</script><p>
+What is the best programming language that exists today? You may enter your answer in upper or lower case, with or without quotes. </p><p><customresponse cfn="test_str" expect="python"><textline correct_answer="python" label="What is the best programming language that exists today?"/><hintgroup hintfn="hint_fn"/></customresponse></p></text></problem></vertical><vertical display_name="MATLAB (ripped from 7.S391r)"><problem attempts="" empty="True" display_name="Assignments" markdown="null" max_attempts="null"><text><p><p>Write MATLAB code that assigns the value <code>80</code> to the variable <code>NucleotidesPerTurn</code>, and <code>'green'</code> to the variable <code>chlorophyll</code> </p></p></text><coderesponse queuename="matlab"><matlabinput rows="10" cols="80" mode="" tabsize="4"><plot_payload>
+        %api_key=SolsRMsNeis
+      %%
+      </plot_payload></matlabinput><codeparam><initial_display/><answer_display/><grader_payload>
+      %api_key=SolsRMsNeis
+      %%
+      assert(~isempty(whos('NucleotidesPerTurn')), 'You must create a variable ''NucleotidesPerTurn''')
+      %%
+      assert(isequal(NucleotidesPerTurn, 80), 'The variable fingerCount should contain the value 5')
+        assert(~isempty(whos('chlorophyll')), 'You must create a variable ''chlorophyll''')
+        %% 
+        assert(strcmp(chlorophyll,'green'), 'The variable sky should contain the value ''green''')
+        %%
+      </grader_payload></codeparam></coderesponse><solution><pre>
+    &gt;&gt; NucleotidesPerTurn = 80
+    &gt;&gt; chlorophyll = 'green'
+    </pre></solution></problem><problem display_name="Sandbox" markdown="null"><p>Use the MATLAB "sandbox" below to carry out the code instructions above. When you want to see the output of your lines of code, click check to evaluate your code. This may take a few moments, please be patient. You will automatically see a green check for valid lines of MATLAB code, but there is no evaulation for a correct or incorrect answer. This box is to provide space for you to practice. Click check each time after you enter new lines of code and want to see the output of the lines of code. Click reset or delete the previous input if you do not want to see the output from those lines.</p><coderesponse queuename="matlab"><matlabinput rows="10" cols="80" mode="" tabsize="4"><plot_payload>
+        %api_key=SolsRMsNeis
+      %%
+      </plot_payload></matlabinput><codeparam><initial_display>
+      </initial_display><answer_display>
+</answer_display><grader_payload>
+      %api_key=SolsRMsNeis
+        %%
+%% 
+
+      
+      </grader_payload></codeparam></coderesponse></problem><problem display_name="Creating matrices" markdown="null"><text><p>Write MATLAB code to creates a 10-by-10 matrix <code>biology</code> that is all zeros except for ones in the diagonal (running from top left to bottom right). Be sure to use the same letter case for the matrix name as given.</p></text><coderesponse queuename="matlab"><matlabinput rows="10" cols="80" mode="" tabsize="4"><plot_payload>
+        %api_key=SolsRMsNeis
+      %%
+      </plot_payload></matlabinput><codeparam><initial_display/><answer_display> </answer_display><grader_payload>
+      %api_key=SolsRMsNeis
+      %%
+      s = whos;
+      aBExists = any(strcmpi('biology',{s.name}));
+      assert(aBExists, 'You have not created a variable with name ''biology''.');
+      %%
+      assert(~any(size(biology)==1), 'Use square brackets to concatenate values together.  Remember that commas separate columns and semicolons separate rows.');
+      %%
+      assert(isequal(biology,eye(10)), 'The matrix ''biology'' does not contain the correct values.')
+      </grader_payload></codeparam></coderesponse><solution><pre>There are multiple solutions, here is a simple one:<br/><br/>biology = zeros(10,10);<br/>for i = 1:10  % row/column indices<br/>biology(i,i) = 1;   % for indices where row and column are equal, replace 0 with 1 <br/>end <br/></pre></solution></problem><problem attempts="" empty="True" display_name="For loops" markdown="null" max_attempts="null"><text><p>Your brother has strange banking habits. Every day, he spends 10% of the money in his account. If he has $36,672 in his account at the end of today, how much will he have left in 60 days?
+      <p>Write MATLAB code to figure it out. Use the variable 'money_left' for how much money your brother will have left, and the variable 'days' for the 60 days of spending.</p>
+    </p></text><coderesponse queuename="matlab"><matlabinput rows="10" cols="80" mode="" tabsize="4"><plot_payload>
+        %api_key=SolsRMsNeis
+        %%
+      </plot_payload></matlabinput><codeparam><initial_display/><answer_display/><grader_payload>
+      %api_key=SolsRMsNeis
+        %%
+      assert(~isempty(whos('money_left')), 'You must have a variable ''money_left''')
+      %%
+        tolerance = 0.1
+        assert((abs(money_left - 65.9) &lt;= tolerance), 'The variable ''money_left'' should contain the money left after 60 days when your code is done running.')
+        %%
+        assert(~isempty(whos('days')), 'You must create a variable ''days''')
+        %% 
+        assert(isequal(days,60), 'The variable days should contain the value ''60''')
+        %%
+      </grader_payload></codeparam></coderesponse><solution><pre>
+    &gt;&gt; money_left = 36672;
+days = 60;
+
+      <span class="key">for</span> n = 1:days
+money_left = money_left - money_left*0.1;
+      <span class="key">end</span>
+money_left
+    </pre></solution></problem><problem attempts="" empty="True" display_name="While loops" markdown="null" max_attempts="null"><text><p>Write MATLAB code that calculates the factorial, <code>facto</code>, of a number <code>numero</code>. Test your code with a value of 13 for <code>numero</code>. Use a while loop to accomplish this task.</p><p><i>Tip: MATLAB doesn't display excess digits when it outputs a value with many digits in scientific notation. Precede the output line with <code>format long</code> to get a complete output.</i></p></text><coderesponse queuename="matlab"><matlabinput rows="10" cols="80" mode="" tabsize="4"><plot_payload>
+        %api_key=SolsRMsNeis
+      %%
+      </plot_payload></matlabinput><codeparam><initial_display/><answer_display/><grader_payload>
+      %api_key=SolsRMsNeis
+      %%
+      assert(~isempty(whos('numero')), 'You must create a variable ''numero''')
+      %%
+      assert(isequal(numero, 13), 'The variable numero should contain the value 13')
+        assert(~isempty(whos('facto')), 'You must create a variable ''facto''')
+        %% 
+        assert(isequal(facto, 6227020800), 'The variable facto should contain the value of numero factorial')
+        %%
+      </grader_payload></codeparam></coderesponse><solution><p>Here's one way you could have done it.</p><pre>
+&gt;&gt; numero = 13;
+counter = 1;
+facto = 1;
+
+while counter &lt;= numero
+facto = counter*facto;
+counter = counter+1;
+end
+
+format long
+facto
+    </pre></solution></problem><problem attempts="" empty="True" display_name="Flow control" markdown="null" max_attempts="null"><text><p>Write MATLAB code that analyzes the numbers in the 2nd column of array <code>m</code> for whether they are odd or even. Create a column vector called <code>oddoreven</code>, and on the rows corresponding to rows in <code>m</code> <b>enter 1 if the number is even and 0 if the number is odd</b>. Use your understanding of loops and control flow to accomplish this task.</p><p>At the end of your code, be sure to display your <code>oddoreven</code> vector to answer the question below.</p><p><i>Tips:</i> You may find the mod(), size(), and zeros() functions useful in this task (you can use <code>help</code> to look up info on the functions or use the Mathworks web help to find out more.</p></text><coderesponse queuename="matlab"><matlabinput rows="40" cols="80" mode="" tabsize="8"><plot_payload>
+        %api_key=SolsRMsNeis
+      %%
+      </plot_payload></matlabinput><codeparam><initial_display>
+%%% DON'T EDIT THIS! %%%
+
+filename = urlwrite('http://web.mit.edu/nschafhe/MITxBiology/test.txt','test.csv');
+m = csvread('test.csv',1,0);
+
+%%% DON'T EDIT THIS! %%%
+
+      </initial_display><answer_display/><grader_payload>
+      %api_key=SolsRMsNeis
+      %%
+      answer = [1;0;1;0;0;0;1;1;1;0]
+      assert(~isempty(whos('oddoreven')), 'You must create a variable ''oddoreven''')
+      %%
+      assert(isequal(oddoreven, answer), 'The vector oddoreven should contain 1 on rows that are even in m, and 0 on rows that are odd in m.')
+        %%
+      </grader_payload></codeparam></coderesponse><solution><p>Here's one way you could do this.</p><pre>
+    &gt;&gt; [y,x] = size(m);
+oddoreven = zeros(y,1);
+
+for i = 1:y
+if mod(m(i,2), 2) == 0
+oddoreven(i,1) = 1;
+else
+oddoreven(i,1) = 0;
+end
+end
+
+oddoreven
+    </pre></solution></problem></vertical><vertical display_name="Test SGA"><edx_sga url_name="test-sgap1" xblock-family="xblock.v1" display_name="SGA Unit 1"/></vertical></sequential></chapter><chapter display_name="LTI"><sequential display_name="LTI"><vertical display_name="CG LTI Test"><lti url_name="3ebec7a811574990bf21219685bc1f99"/></vertical></sequential></chapter><wiki slug="DevOps.0.001.2015_Summer"/></course></xbundle>

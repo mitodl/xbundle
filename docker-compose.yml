@@ -1,0 +1,5 @@
+xbundle:
+  build: .
+  volumes:
+    - .:/src
+
