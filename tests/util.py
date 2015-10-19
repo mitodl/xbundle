@@ -14,8 +14,14 @@ def clean_xml(xml_str):
     Remove whitespace from XML.
     """
     parser = etree.XMLParser(remove_blank_text=True)
-    return etree.tostring(
+    xml_string = etree.tostring(
         etree.XML(xml_str, parser=parser))
+    try:
+        xml_string = xml_string.decode('utf-8')
+    except AttributeError:
+        pass
+
+    return xml_string
 
 
 def file_from_string(xml_str):

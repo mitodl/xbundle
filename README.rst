@@ -1,6 +1,12 @@
 xbundle
 =======
 
+.. image:: https://travis-ci.org/mitodl/xbundle.svg?branch=travis
+    :target: https://travis-ci.org/mitodl/xbundle
+
+.. image:: https://coveralls.io/repos/mitodl/xbundle/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/mitodl/xbundle?branch=master             
+
 ``xbundle`` converts back and forth between OLX and "xbundle" style XML
 formats. The xbundle format is a single XML file.
 

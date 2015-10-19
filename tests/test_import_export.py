@@ -7,7 +7,7 @@ from __future__ import print_function
 
 from lxml import etree
 import os
-from shutil import rmtree
+from shutil import rmtree, copytree
 from subprocess import check_call
 from tempfile import mkdtemp
 from unittest import TestCase
@@ -15,6 +15,20 @@ from unittest import TestCase
 from xbundle import XBundle
 from tests.util import clean_xml, file_from_string
 from tests.data import expected as expected_data, input as input_data
+
+
+def _normalize_xml(dirname):
+    """Removes whitespace from xml files in the given directory."""
+    for dname, _, files in os.walk(dirname):
+        for fname in files:
+            fpath = os.path.join(dname, fname)
+            if not fpath.endswith('.xml'):
+                continue
+            with open(fpath) as f:
+                s = f.read()
+                s = clean_xml(s)
+            with open(fpath, 'w') as f:
+                f.write(s)
 
 
 class TestImportExport(TestCase):
@@ -62,10 +76,18 @@ class TestImportExport(TestCase):
         try:
             bundle.export_to_directory(tdir)
 
+            knownDir = os.path.join("input_testdata", "mitx.01.exported")
+            knownTempDir = os.path.join(tdir, 'mitx.01.exported')
+            newDir = os.path.join(tdir, "mitx.01")
+
+            # Transform xml files to remove spaces. This allows for cross tests
+            # to pass across platforms with slightly different xml serializers
+            # (see: travis). We copy the files for easy cleanup.
+            copytree(knownDir, knownTempDir)
+            _normalize_xml(tdir)
+
             check_call([
-                "diff", "-r",
-                os.path.join("input_testdata", "mitx.01.exported"),
-                os.path.join(tdir, "mitx.01"),
+                "diff", "-r", knownTempDir, newDir
             ])
         finally:
             rmtree(tdir)
@@ -196,7 +218,7 @@ class TestImportExport(TestCase):
         try:
             bundle.export_to_directory(tempdir, xml_only=True, newfmt=True)
 
-            for root, _, files in os.walk(os.path.join(tempdir, "0.001")):
+            for _, _, files in os.walk(os.path.join(tempdir, "0.001")):
                 for filename in files:
                     # We set xml_only=True so there shouldn't be anything else.
                     self.assertTrue(filename.endswith(".xml"))
