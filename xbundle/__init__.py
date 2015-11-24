@@ -42,7 +42,7 @@ DESCRIPTOR_TAGS = {
     'course', 'chapter', 'sequential', 'vertical', 'html', 'problem', 'video',
     'conditional', 'combinedopenended', 'videosequence', 'problemset',
     'wrapper', 'poll_question', 'randomize', 'proctor', 'discussion',
-    'staffgrading',
+    'staffgrading', 'split_test'
 }
 
 
