@@ -42,7 +42,7 @@ DESCRIPTOR_TAGS = {
     'course', 'chapter', 'sequential', 'vertical', 'html', 'problem', 'video',
     'conditional', 'combinedopenended', 'videosequence', 'problemset',
     'wrapper', 'poll_question', 'randomize', 'proctor', 'discussion',
-    'staffgrading',
+    'staffgrading', 'split_test'
 }
 
 
@@ -204,7 +204,12 @@ class XBundle(object):
         """
         Load course tree, removing intermediate descriptors with url_name.
         """
-        elem = etree.parse(join(path, 'course.xml')).getroot()
+        try:
+            elem = etree.parse(join(path, 'course.xml')).getroot()
+        except etree.XMLSyntaxError:
+            with open(join(path, 'course.xml')) as coursefile:
+                root = join(path, coursefile.read())
+            elem = etree.parse(root).getroot()
         semester = elem.get(
             'url_name',
             '')		# the url_name of <course> is special - the semester

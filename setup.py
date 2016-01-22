@@ -8,7 +8,7 @@ with open('README.rst') as readme_file:
 
 setup(
     name='xbundle',
-    version="0.3.1",
+    version="0.3.2",
     packages=['xbundle'],
     scripts=['bin/xbundle_convert'],
     author='MIT ODL Engineering',
