@@ -205,7 +205,12 @@ class XBundle(object):
         """
         Load course tree, removing intermediate descriptors with url_name.
         """
-        elem = etree.parse(join(path, 'course.xml')).getroot()
+        try:
+            elem = etree.parse(join(path, 'course.xml')).getroot()
+        except etree.XMLSyntaxError:
+            with open(join(path, 'course.xml')) as coursefile:
+                root = join(path, coursefile.read())
+            elem = etree.parse(root).getroot()
         semester = elem.get(
             'url_name',
             '')		# the url_name of <course> is special - the semester
