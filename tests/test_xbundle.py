@@ -6,13 +6,12 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 import os
-from lxml import etree
 from shutil import rmtree
-from tempfile import mkdtemp
 from unittest import TestCase
+from lxml import etree
 
 from xbundle import XBundle
-from tests.util import clean_xml, file_from_string
+from tests.util import clean_xml, file_from_string, create_tmpdir_and_chdir
 from tests.data import input as input_data, expected as expected_data
 
 
@@ -62,22 +61,28 @@ class TestXBundle(TestCase):
         expected = expected_data.SET_COURSE
         self.assertEqual(clean_xml(bundle_string), clean_xml(expected))
 
+    def test_str_does_not_change_xml(self):
+        """
+        str(bundle) doesn't change input xml
+        """
+        input_xml = input_data.URL_NAME_ORIG_IN_CHAPTER1
+        bundle = XBundle(keep_urls=True)
+        bundle.load(file_from_string(input_xml))
+
+        self.assertEqual(clean_xml(input_xml), clean_xml(str(bundle)))
+
     def test_add_descriptors(self):
         """
         Test add_descriptors.
         """
         # Note url_name_orig in chapter.
-        input_xml = input_data.URL_NAME_ORIG_IN_CHAPTER1
+        input_xml_1 = input_data.URL_NAME_ORIG_IN_CHAPTER1
         bundle = XBundle(keep_urls=True)
-        bundle.load(file_from_string(input_xml))
-
-        # str(bundle) doesn't change input xml, but export_to_directory will.
-        self.assertEqual(clean_xml(input_xml), clean_xml(str(bundle)))
+        bundle.load(file_from_string(input_xml_1))
 
         old_current_dir = os.getcwd()
-        tempdir = mkdtemp()
+        tempdir = create_tmpdir_and_chdir()
         try:
-            os.chdir(tempdir)
             bundle.export_to_directory()
 
             bundle2 = XBundle(keep_urls=True)

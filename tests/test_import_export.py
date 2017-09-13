@@ -5,15 +5,15 @@ Tests that data is retained after an import/export or export/import cycle.
 from __future__ import unicode_literals
 from __future__ import print_function
 
-from lxml import etree
 import os
 from shutil import rmtree, copytree
 from subprocess import check_call
 from tempfile import mkdtemp
 from unittest import TestCase
+from lxml import etree
 
 from xbundle import XBundle
-from tests.util import clean_xml, file_from_string
+from tests.util import clean_xml, file_from_string, create_tmpdir_and_chdir
 from tests.data import expected as expected_data, input as input_data
 
 
@@ -154,17 +154,13 @@ class TestImportExport(TestCase):
         Test the changes to url_name after export_to_directory and import.
         """
         # Note url_name_orig in chapter.
-        input_xml = input_data.URL_NAME_ORIG_IN_CHAPTER2
+        input_xml_2 = input_data.URL_NAME_ORIG_IN_CHAPTER2
         bundle = XBundle(keep_urls=True, force_studio_format=True)
-        bundle.load(file_from_string(input_xml))
-
-        # str(bundle) doesn't change input xml, but export_to_directory will.
-        self.assertEqual(clean_xml(input_xml), clean_xml(str(bundle)))
+        bundle.load(file_from_string(input_xml_2))
 
         old_current_dir = os.getcwd()
-        tempdir = mkdtemp()
+        tempdir = create_tmpdir_and_chdir()
         try:
-            os.chdir(tempdir)
             bundle.export_to_directory()
 
             bundle2 = XBundle(keep_urls=True, force_studio_format=True)

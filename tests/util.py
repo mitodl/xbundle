@@ -5,6 +5,8 @@ Helper functions shared between tests.
 from __future__ import unicode_literals
 from __future__ import print_function
 
+import os
+from tempfile import mkdtemp
 from lxml import etree
 from six import StringIO
 
@@ -22,6 +24,16 @@ def clean_xml(xml_str):
         pass
 
     return xml_string
+
+
+def create_tmpdir_and_chdir():
+    """
+    Create a temporary directory and go there.
+    Returns the temporary directory path
+    """
+    tempdir = mkdtemp()
+    os.chdir(tempdir)
+    return tempdir
 
 
 def file_from_string(xml_str):
