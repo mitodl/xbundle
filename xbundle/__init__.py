@@ -18,16 +18,17 @@ the file, and it can import and export to standard edX (unbundled) format.
 from __future__ import unicode_literals
 from __future__ import print_function
 
-import six
 import os
-import re
-import logging
-from glob import glob
-import subprocess
 from os.path import join, exists, basename
 
-from lxml import etree
+import re
+import logging
+import subprocess
+from glob import glob
 import unicodedata
+import six
+
+from lxml import etree
 log = logging.getLogger()  # pylint: disable=invalid-name
 logging.basicConfig()
 log.setLevel(logging.DEBUG)
@@ -42,7 +43,7 @@ DESCRIPTOR_TAGS = {
     'course', 'chapter', 'sequential', 'vertical', 'html', 'problem', 'video',
     'conditional', 'combinedopenended', 'videosequence', 'problemset',
     'wrapper', 'poll_question', 'randomize', 'proctor', 'discussion',
-    'staffgrading',
+    'staffgrading', 'split_test'
 }
 
 

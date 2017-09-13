@@ -6,7 +6,13 @@ ignored-classes=
 	six.moves,
 ignored-modules=
 	six,
-	six.moves,
+	six.moves
+
+[MASTER]
+ignore = expected.py, input.py
+
+[SIMILARITIES]
+IGNORE-IMPORTS=yes
 
 [MESSAGES CONTROL]
 disable = no-member, old-style-class, no-init, too-few-public-methods, abstract-method, invalid-name, too-many-ancestors
