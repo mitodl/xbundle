@@ -156,12 +156,15 @@ class XBundle(object):
             return
         file_handle.write(str(self))
 
-    def __str__(self):
+    def xml_course(self):
         xml = etree.Element('xbundle')
         self.xml = xml
         xml.append(self.metadata)
         xml.append(self.course)
-        return pp_xml(xml)
+        return xml
+
+    def __str__(self):
+        return pp_xml(self.xml_course())
 
     def import_from_directory(self, path='./'):
         """
